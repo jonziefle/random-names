@@ -3,28 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Random Names</title>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 <body>
 
 <p>Generate random names between 3 and 10 characters!</p>
+<select>
+    <option value="" selected disabled>Select Language</option>
+</select>
 <button id="NameButton">Generate Name</button>
 <p id="Name"></p>
 
-<script>
-    document.getElementById("NameButton").addEventListener("click", generateName);
-
-    function generateName() {
-        var letterMin = 3, letterMax = 10;
-        var letterNum = Math.floor(Math.random() * (letterMax - letterMin)) + letterMin;
-
-        var name = "";
-        for (var j = 0; j < letterNum; j++) {
-            name += String.fromCharCode(97 + Math.floor(Math.random() * 26));
-        }
-        name = name.charAt(0).toUpperCase() + name.slice(1);
-
-        document.getElementById("Name").innerHTML = name;
-    }
-</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="js/scripts.js"></script>
 </body>
 </html>
