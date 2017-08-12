@@ -6,13 +6,32 @@
     <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 <body>
-
-<p>Generate random names between 3 and 10 characters!</p>
-<select class="selector">
-    <option value="" selected disabled>Select Language</option>
-</select>
-<button id="NameButton">Generate Name</button>
-<p id="Name"></p>
+<h1>Random Name Generator</h1>
+<div class="simple-names">
+    <h2>Simple Name Generation (Multi-Language)</h2>
+    <p>
+        Generate random names in various languages!
+        Uses simple letter frequencies for each language.
+    </p>
+    <select class="selector">
+        <option value="" selected disabled>Select Language</option>
+    </select>
+    <button class="submit-button">Generate Name</button>
+    <p class="results"></p>
+</div>
+<div class="complex-names">
+    <h2>Complex Name Generation (English Only)</h2>
+    <p>
+        Generate random names in English!
+        Uses more complex data showing the frequency of letter ordering.
+    </p>
+    <select class="selector">
+        <option value="" selected disabled>Select First Letter</option>
+        <option value="random">Surprise Me!</option>
+    </select>
+    <button class="submit-button">Generate Name</button>
+    <p class="results"></p>
+</div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="js/scripts.js"></script>
