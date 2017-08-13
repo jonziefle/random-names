@@ -1,5 +1,5 @@
 var RandomNameGenerator = (function () {
-    // frequency data
+    // data from https://en.wikipedia.org/wiki/Letter_frequency
     var simpleLetterFrequency = {
         "letters": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "à", "â", "á", "å", "ä", "ã", "ą", "æ", "œ", "ç", "ĉ", "ć", "č", "ď", "ð", "è", "é", "ê", "ë", "ę", "ě", "ĝ", "ğ", "ĥ", "î", "ì", "í", "ï", "ı", "ĵ", "ł", "ñ", "ń", "ň", "ò", "ö", "ô", "ó", "õ", "ø", "ř", "ŝ", "ş", "ś", "š", "ß", "ť", "þ", "ù", "ú", "û", "ŭ", "ü", "ů", "ý", "ź", "ż", "ž"],
         "frequency": {
@@ -19,6 +19,8 @@ var RandomNameGenerator = (function () {
         },
         "cumulative": {}
     };
+
+    // data from http://www.prooffreader.com/2014/09/how-often-does-given-letter-follow.html
     var complexLetterFrequency = {
         "letters": ["_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
         "frequency": {
