@@ -111,7 +111,7 @@ var RandomNameGenerator = (function () {
             name += generateLetter(language, simpleLetterFrequency);
         }
 
-        simpleNames.find(".results").html(capitalizeLetter(name));
+        simpleNames.find(".name-results").html(displayResults(name, language, "simple", simpleLetterFrequency));
     }
 
     // generate complex names
@@ -131,7 +131,7 @@ var RandomNameGenerator = (function () {
 
         // generate remaining letters
         var tempLetter;
-        for (var i = 0; i < letterRange; i++) {
+        for (var i = 1; i < letterRange; i++) {
             do {
                 tempLetter = generateLetter(currentLetter, complexLetterFrequency);
             } while (tempLetter === "_");
@@ -140,7 +140,7 @@ var RandomNameGenerator = (function () {
             name += currentLetter;
         }
 
-        complexNames.find(".results").html(capitalizeLetter(name));
+        complexNames.find(".name-results").html(displayResults(name, "english", "complex", complexLetterFrequency));
     }
 
     // generate single letter
@@ -162,6 +162,44 @@ var RandomNameGenerator = (function () {
         return currentLetter;
     }
 
+    // display name results
+    function displayResults(name, language, type, letterFrequency) {
+        var letters = letterFrequency["letters"];
+        var frequency = letterFrequency["frequency"];
+
+        var html = "";
+        html += "<p>Name: " + capitalizeLetter(name) + "</p>";
+        html += "<p>Language: " + capitalizeLetter(language) + "</p>";
+
+        var statistics = "";
+        if (type === "simple") {
+            for (var i = 0; i < name.length; i++) {
+                statistics += capitalizeLetter(name[i]) + ": ";
+                statistics += frequency[language][letters.indexOf(name[i])].toFixed(2) + "%";
+                if (i < name.length - 1) {
+                    statistics += " | ";
+                }
+            }
+        } else {
+            // first letter
+            statistics += capitalizeLetter(name[0]) + ": ";
+            statistics += frequency["_"][letters.indexOf(name[0])].toFixed(2) + "%";
+            statistics += " | ";
+
+            // remaining letters
+            for (var j = 1; j < name.length; j++) {
+                statistics += capitalizeLetter(name[j]) + ": ";
+                statistics += frequency[name[j - 1]][letters.indexOf(name[j])].toFixed(2) + "%";
+                if (j < name.length - 1) {
+                    statistics += " | ";
+                }
+            }
+        }
+        html += "<p>Letters: " + statistics + "</p>";
+
+        return html;
+    }
+
     return {
         init: function () {
             // populate dropdowns
@@ -180,7 +218,7 @@ var RandomNameGenerator = (function () {
                     simpleLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
                     generateSimpleName(selectValue);
                 } else {
-                    simpleNames.find(".results").html("Please select a language!");
+                    simpleNames.find(".name-results").html("<p>Please select a language!</p>");
                 }
             });
 
@@ -192,7 +230,7 @@ var RandomNameGenerator = (function () {
                     complexLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
                     generateComplexName(selectValue);
                 } else {
-                    complexNames.find(".results").html("Please select a letter!");
+                    complexNames.find(".name-results").html("<p>Please select a letter!</p>");
                 }
             });
         },
