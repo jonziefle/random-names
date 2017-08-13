@@ -96,10 +96,19 @@ var RandomNameGenerator = (function () {
         // generate word length
         var letterRange = randomInt(3, 10);
 
+        // determine language
+        var language;
+        if (selectValue === "random") {
+            var keys = Object.keys(simpleLetterFrequency["frequency"]);
+            language = keys[Math.floor(Math.random() * keys.length)];
+        } else {
+            language = selectValue;
+        }
+
         // generate random letters
         var name = "";
         for (var i = 0; i < letterRange; i++) {
-            name += generateLetter(selectValue, simpleLetterFrequency);
+            name += generateLetter(language, simpleLetterFrequency);
         }
 
         simpleNames.find(".results").html(capitalizeLetter(name));
@@ -167,7 +176,8 @@ var RandomNameGenerator = (function () {
             simpleNames.on("click", ".submit-button", function () {
                 var selectValue = simpleNames.find(".selector").val();
 
-                if (simpleLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
+                if (selectValue === "random" ||
+                    simpleLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
                     generateSimpleName(selectValue);
                 } else {
                     simpleNames.find(".results").html("Please select a language!");
@@ -178,7 +188,8 @@ var RandomNameGenerator = (function () {
             complexNames.on("click", ".submit-button", function () {
                 var selectValue = complexNames.find(".selector").val();
 
-                if (selectValue === "random" || complexLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
+                if (selectValue === "random" ||
+                    complexLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
                     generateComplexName(selectValue);
                 } else {
                     complexNames.find(".results").html("Please select a letter!");
