@@ -149,13 +149,36 @@ var RandomNameGenerator = (function () {
 
     // populate the select languages
     function populateLanguageSelect(parent, letterFrequency) {
-        var selectHTML = "";
-        $.each(letterFrequency["frequency"], function (key, value) {
-            if (key !== "_") {
-                selectHTML += "<option value='" + key + "'>" + capitalizeLetter(key) + "</option>";
-            }
+        var languageHTML = "";
+        $.each(letterFrequency, function (key, value) {
+            languageHTML += "<option value='" + key + "'>" + capitalizeLetter(key) + "</option>";
         });
-        parent.find(".selector").append(selectHTML);
+        parent.find(".selector[name='language']").append(languageHTML);
+    }
+
+    // populate the select letters
+    function populateLetterSelect(parent, language, letterFrequency) {
+        var letterHTML = "";
+        if (language !== "random") {
+            letterFrequency[language]["letters"].forEach(function (letter) {
+                if (letter !== "_") {
+                    letterHTML += "<option value='" + letter + "'>" + capitalizeLetter(letter) + "</option>";
+                }
+            })
+        }
+        parent.find(".selector[name='letter'] option:gt(1)").remove();
+        parent.find(".selector[name='letter']").append(letterHTML);
+    }
+
+    // populate the select letters
+    function populateLengthSelect() {
+        var lengthMin = 3;
+        var lengthMax = 10;
+        var lengthHTML = "";
+        for (var i = lengthMin; i <= lengthMax; i++) {
+            lengthHTML += "<option value='" + i + "'>" + i + "</option>";
+        }
+        $(".selector[name='length']").append(lengthHTML);
     }
 
     // generates cumulative distributions from the individual letter frequencies
@@ -285,6 +308,7 @@ var RandomNameGenerator = (function () {
             // populate dropdowns
             populateLanguageSelect(simpleNames, simpleLetterFrequency);
             populateLanguageSelect(complexNames, complexLetterFrequency);
+            populateLengthSelect();
 
             // generate cumulative distributions
             generateCumulativeDistributions(simpleLetterFrequency);
@@ -302,6 +326,11 @@ var RandomNameGenerator = (function () {
                 }
             });
 
+            simpleNames.find(".selector[name='language']").on("change", function () {
+                var language = $(this).val();
+                populateLetterSelect(simpleNames, language, simpleLetterFrequency);
+            });
+
             // click handler for complex name generation
             complexNames.on("click", ".submit-button", function () {
                 var selectValue = complexNames.find(".selector").val();
@@ -312,6 +341,11 @@ var RandomNameGenerator = (function () {
                 } else {
                     complexNames.find(".name-results").html("<p>Please select a letter!</p>");
                 }
+            });
+
+            complexNames.find(".selector[name='language']").on("change", function () {
+                var language = $(this).val();
+                populateLetterSelect(complexNames, language, complexLetterFrequency);
             });
         },
         simpleLetterFrequency: simpleLetterFrequency,
