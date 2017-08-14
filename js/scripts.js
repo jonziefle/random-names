@@ -166,8 +166,15 @@ var RandomNameGenerator = (function () {
                 }
             })
         }
-        parent.find(".selector[name='letter'] option:gt(1)").remove();
-        parent.find(".selector[name='letter']").append(letterHTML);
+
+        var selector = parent.find(".selector[name='letter']");
+        var selectorValue = selector.val();
+        selector.find("option:gt(1)").remove();
+        selector.append(letterHTML);
+
+        if (selector.find("option[value='" + selectorValue + "']").length > 0) {
+            selector.val(selectorValue);
+        }
     }
 
     // populate the select letters
@@ -183,14 +190,16 @@ var RandomNameGenerator = (function () {
 
     // generates cumulative distributions from the individual letter frequencies
     function generateCumulativeDistributions(letterFrequency) {
-        $.each(letterFrequency["frequency"], function (language, frequencyArray) {
-            var cumulativeArray = [];
-            var sum = 0;
-            frequencyArray.forEach(function (frequency) {
-                sum += parseInt(frequency * 10000);
-                cumulativeArray.push(sum);
+        $.each(letterFrequency, function (language, languageObject) {
+            $.each(languageObject["frequency"], function (language, frequencyArray) {
+                var cumulativeArray = [];
+                var sum = 0;
+                frequencyArray.forEach(function (frequency) {
+                    sum += parseInt(frequency * 10000);
+                    cumulativeArray.push(sum);
+                });
+                languageObject["cumulative"] = cumulativeArray;
             });
-            letterFrequency["cumulative"][language] = cumulativeArray;
         });
     }
 
