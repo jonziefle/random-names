@@ -169,7 +169,7 @@ var RandomNameGenerator = (function () {
 
         var selector = parent.find(".selector[name='letter']");
         var selectorValue = selector.val();
-        selector.find("option:gt(1)").remove();
+        selector.find("option:gt(0)").remove();
         selector.append(letterHTML);
 
         if (selector.find("option[value='" + selectorValue + "']").length > 0) {
@@ -179,8 +179,7 @@ var RandomNameGenerator = (function () {
 
     // populate the select letters
     function populateLengthSelect() {
-        var lengthMin = 3;
-        var lengthMax = 10;
+        var lengthMin = 3, lengthMax = 10;
         var lengthHTML = "";
         for (var i = lengthMin; i <= lengthMax; i++) {
             lengthHTML += "<option value='" + i + "'>" + i + "</option>";
@@ -191,75 +190,90 @@ var RandomNameGenerator = (function () {
     // generates cumulative distributions from the individual letter frequencies
     function generateCumulativeDistributions(letterFrequency) {
         $.each(letterFrequency, function (language, languageObject) {
-            $.each(languageObject["frequency"], function (language, frequencyArray) {
+            $.each(languageObject["frequency"], function (letter, frequencyArray) {
                 var cumulativeArray = [];
                 var sum = 0;
                 frequencyArray.forEach(function (frequency) {
                     sum += parseInt(frequency * 10000);
                     cumulativeArray.push(sum);
                 });
-                languageObject["cumulative"] = cumulativeArray;
+                languageObject["cumulative"][letter] = cumulativeArray;
             });
         });
     }
 
     // generate simple names
-    function generateSimpleName(selectValue) {
-        // generate word length
-        var letterRange = randomInt(3, 10);
+    function generateSimpleName(language, letter, length) {
+        var name = "";
 
         // determine language
-        var language;
-        if (selectValue === "random") {
-            var keys = Object.keys(simpleLetterFrequency["frequency"]);
+        if (language === "random") {
+            var keys = Object.keys(simpleLetterFrequency);
             language = keys[Math.floor(Math.random() * keys.length)];
-        } else {
-            language = selectValue;
+        }
+
+        // determine word length
+        if (length === "random") {
+            length = randomInt(3, 10);
+        }
+
+        // determine first letter
+        if (letter !== "random") {
+            name += letter;
+            length = length - 1;
         }
 
         // generate random letters
-        var name = "";
-        for (var i = 0; i < letterRange; i++) {
-            name += generateLetter(language, simpleLetterFrequency);
+        for (var i = 0; i < length; i++) {
+            name += generateLetter(simpleLetterFrequency[language], "all");
         }
 
-        simpleNames.find(".name-results").html(displayResults(name, language, "simple", simpleLetterFrequency));
+        simpleNames.find(".name-results").html(displayResults(simpleLetterFrequency[language], "simple", name, language));
     }
 
     // generate complex names
-    function generateComplexName(selectValue) {
-        // generate word length
-        var letterRange = randomInt(3, 10);
+    function generateComplexName(language, letter, length) {
+        var name = "";
+
+        // determine language
+        if (language === "random") {
+            var keys = Object.keys(complexLetterFrequency);
+            language = keys[Math.floor(Math.random() * keys.length)];
+        }
+
+        // determine word length
+        if (length === "random") {
+            length = randomInt(3, 10);
+        }
 
         // generate first letter
-        var name = "";
         var currentLetter;
-        if (selectValue === "random") {
-            currentLetter = generateLetter("_", complexLetterFrequency);
+        if (letter === "random") {
+            currentLetter = generateLetter(complexLetterFrequency[language], "_");
         } else {
-            currentLetter = selectValue;
+            currentLetter = letter;
         }
         name += currentLetter;
 
         // generate remaining letters
         var tempLetter;
-        for (var i = 1; i < letterRange; i++) {
+        for (var i = 1; i < length; i++) {
             do {
-                tempLetter = generateLetter(currentLetter, complexLetterFrequency);
+                tempLetter = generateLetter(complexLetterFrequency[language], currentLetter);
             } while (tempLetter === "_");
 
             currentLetter = tempLetter;
             name += currentLetter;
         }
 
-        complexNames.find(".name-results").html(displayResults(name, "english", "complex", complexLetterFrequency));
+        complexNames.find(".name-results").html(displayResults(complexLetterFrequency[language], "complex", name, language));
     }
 
     // generate single letter
-    function generateLetter(category, letterFrequency) {
+    function generateLetter(letterFrequency, letter) {
         var letters = letterFrequency["letters"];
-        var frequency = letterFrequency["frequency"][category];
-        var cumulative = letterFrequency["cumulative"][category];
+        var frequency = letterFrequency["frequency"][letter];
+        var cumulative = letterFrequency["cumulative"][letter];
 
         var randomMax = cumulative[cumulative.length - 1];
         var randomLetter = Math.floor(Math.random() * randomMax);
@@ -275,7 +289,7 @@ var RandomNameGenerator = (function () {
     }
 
     // display name results
-    function displayResults(name, language, type, letterFrequency) {
+    function displayResults(letterFrequency, type, name, language) {
         var letters = letterFrequency["letters"];
         var frequency = letterFrequency["frequency"];
 
@@ -287,7 +301,7 @@ var RandomNameGenerator = (function () {
         if (type === "simple") {
             for (var i = 0; i < name.length; i++) {
                 statistics += capitalizeLetter(name[i]) + ": ";
-                statistics += frequency[language][letters.indexOf(name[i])].toFixed(2) + "%";
+                statistics += frequency["all"][letters.indexOf(name[i])].toFixed(2) + "%";
                 if (i < name.length - 1) {
                     statistics += " | ";
                 }
@@ -323,38 +337,31 @@ var RandomNameGenerator = (function () {
             generateCumulativeDistributions(simpleLetterFrequency);
             generateCumulativeDistributions(complexLetterFrequency);
 
-            // click handler for simple name generation
-            simpleNames.on("click", ".submit-button", function () {
-                var selectValue = simpleNames.find(".selector").val();
+            // click handler for name generation
+            $(".submit-button").on("click", function () {
+                var parent = $(this).closest(".name-generator");
+                var type = parent.attr("data-name-type");
+                var language = parent.find(".selector[name='language']").val();
+                var letter = parent.find(".selector[name='letter']").val();
+                var length = parent.find(".selector[name='length']").val();
 
-                if (selectValue === "random" ||
-                    simpleLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
-                    generateSimpleName(selectValue);
+                if (type === "simple") {
+                    generateSimpleName(language, letter, length);
                 } else {
-                    simpleNames.find(".name-results").html("<p>Please select a language!</p>");
+                    generateComplexName(language, letter, length);
                 }
             });
 
-            simpleNames.find(".selector[name='language']").on("change", function () {
+            $(".selector[name='language']").on("change", function () {
+                var parent = $(this).closest(".name-generator");
+                var type = parent.attr("data-name-type");
                 var language = $(this).val();
-                populateLetterSelect(simpleNames, language, simpleLetterFrequency);
-            });
 
-            // click handler for complex name generation
-            complexNames.on("click", ".submit-button", function () {
-                var selectValue = complexNames.find(".selector").val();
-
-                if (selectValue === "random" ||
-                    complexLetterFrequency["frequency"].hasOwnProperty(selectValue)) {
-                    generateComplexName(selectValue);
+                if (type === "simple") {
+                    populateLetterSelect(parent, language, simpleLetterFrequency);
                 } else {
-                    complexNames.find(".name-results").html("<p>Please select a letter!</p>");
+                    populateLetterSelect(parent, language, complexLetterFrequency);
                 }
-            });
-
-            complexNames.find(".selector[name='language']").on("change", function () {
-                var language = $(this).val();
-                populateLetterSelect(complexNames, language, complexLetterFrequency);
             });
         },
         simpleLetterFrequency: simpleLetterFrequency,
