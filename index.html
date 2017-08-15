@@ -7,10 +7,10 @@
 </head>
 <body>
 <h1>Random Name Generator</h1>
-<div class="name-generator" data-name-type="simple">
+<div class="name-generator" data-name-type="monogram">
     <div class="name-input">
-        <h2>Simple Name Generation</h2>
-        <p>Uses simple letter frequencies for each language.</p>
+        <h2>Name Generation (using monogram frequencies)</h2>
+        <p>Uses the the frequencies of individual letters</p>
         Language:
         <select class="selector" name="language">
             <option value="random">Random</option>
@@ -27,10 +27,10 @@
     </div>
     <div class="name-results"></div>
 </div>
-<div class="name-generator" data-name-type="complex">
+<div class="name-generator" data-name-type="bigram">
     <div class="name-input">
-        <h2>Complex Name Generation</h2>
-        <p>Uses more complex data showing the frequency of letter ordering.</p>
+        <h2>Name Generation (using bigram frequencies)</h2>
+        <p>Uses the the frequencies of letter pairs (including the beginning pair)</p>
         Language:
         <select class="selector" name="language">
             <option value="random">Random</option>
