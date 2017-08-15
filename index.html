@@ -9,14 +9,19 @@
 <h1>Random Name Generator</h1>
 <div class="name-generator" data-name-type="simple">
     <div class="name-input">
-        <h2>Simple Name Generation (Multi-Language)</h2>
-        <p>
-            Generate random names in various languages!
-            Uses simple letter frequencies for each language.
-        </p>
-        <select class="selector">
-            <option value="" selected disabled>Select Language</option>
-            <option value="random">Surprise Me!</option>
+        <h2>Simple Name Generation</h2>
+        <p>Uses simple letter frequencies for each language.</p>
+        Language:
+        <select class="selector" name="language">
+            <option value="random">Random</option>
+        </select>
+        First Letter:
+        <select class="selector" name="letter">
+            <option value="random">Random</option>
+        </select>
+        Word Length:
+        <select class="selector" name="length">
+            <option value="random">Random</option>
         </select>
         <button class="submit-button">Generate Name</button>
     </div>
@@ -24,14 +29,19 @@
 </div>
 <div class="name-generator" data-name-type="complex">
     <div class="name-input">
-        <h2>Complex Name Generation (English Only)</h2>
-        <p>
-            Generate random names in English!
-            Uses more complex data showing the frequency of letter ordering.
-        </p>
-        <select class="selector">
-            <option value="" selected disabled>Select First Letter</option>
-            <option value="random">Surprise Me!</option>
+        <h2>Complex Name Generation</h2>
+        <p>Uses more complex data showing the frequency of letter ordering.</p>
+        Language:
+        <select class="selector" name="language">
+            <option value="random">Random</option>
+        </select>
+        First Letter:
+        <select class="selector" name="letter">
+            <option value="random">Random</option>
+        </select>
+        Word Length:
+        <select class="selector" name="length">
+            <option value="random">Random</option>
         </select>
         <button class="submit-button">Generate Name</button>
     </div>
