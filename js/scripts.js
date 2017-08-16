@@ -210,8 +210,55 @@ var RandomNameGenerator = (function () {
     }
 
     /***** Public Functions *********************************************************/
+    // getter for language frequency
     function getLanguageFrequency() {
         return languageFrequency;
+    }
+
+    // test for the random letter generator
+    function testGenerateLetter() {
+        var language = "english";
+        var type = "monogram";
+        var letter = "_";
+
+        var letters = languageFrequency[language]["letters"];
+        var frequency = languageFrequency[language][type]["frequency"][letter];
+
+        // initialize letter count array
+        var letterCount = [];
+        letters.forEach(function (element, index) {
+            letterCount[index] = 0;
+        });
+
+        // generate random letters
+        var testCount = 10000;
+        for (var j = 0; j < testCount; j++) {
+            var randomNumber = Math.random();
+            var randomLetter = generateLetter(randomNumber, language, type, letter);
+
+            var index = letters.indexOf(randomLetter);
+            if (index !== -1) {
+                letterCount[index]++;
+            }
+        }
+
+        // calculate test percentages
+        letterCount.forEach(function (element, index) {
+            var value = element / testCount * 100;
+            letterCount[index] = Number(value.toFixed(3));
+        });
+
+        // calculate percent difference
+        var letterDifference = [];
+        letterCount.forEach(function (element, index) {
+            var value = Math.abs(letterCount[index] - frequency[index]) / ((letterCount[index] + frequency[index]) / 2) * 100;
+            letterDifference[index] = Number(value.toFixed(2));
+        });
+
+        // output results
+        letterDifference.forEach(function (element, index) {
+            console.log(letters[index] + ": " + element + "%");
+        });
     }
 
     return {
@@ -235,7 +282,8 @@ var RandomNameGenerator = (function () {
                 populateLetterSelect(language);
             });
         },
-        getLanguageFrequency: getLanguageFrequency
+        getLanguageFrequency: getLanguageFrequency,
+        testGenerateLetter: testGenerateLetter
     }
 })();
 RandomNameGenerator.init();
