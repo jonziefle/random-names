@@ -1,10 +1,13 @@
 # random-names
-This application generates random names using letter frequency distributions. There are two current versions used: **simple** and **complex**.
+This application generates random names using letter frequency distributions. There are two different types of letter counts used: **monogram** and **digram**.
 
-## Simple Names
-Simple names are generated based on average frequencies of each letter, based on a specific language. Frequency data used was found here: https://en.wikipedia.org/wiki/Letter_frequency
-
-## Complex Names
-Complex names are generated using average frequencies for consecutive letters. Data for this calculation was found for English: http://www.prooffreader.com/2014/09/how-often-does-given-letter-follow.html
+## Monogram
+Names are generated based on average frequencies of each individual letter. Langauges available: **English**, **French**, **German**, **Spanish**, **Portuguese**, **Esperanto**, **Italian**, **Swedish**, **Polish**, **Dutch**, **Danish**, **Icelandic**, **Finnish**.
 
 
+Frequency data used: https://en.wikipedia.org/wiki/Letter_frequency
+
+## Bigram
+Names are generated based on the frequencies of letter pairs (including the beginning pair). Languages available: **English**
+
+Frequency data used: http://www.prooffreader.com/2014/09/how-often-does-given-letter-follow.html
