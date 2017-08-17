@@ -231,7 +231,7 @@ var RandomNameGenerator = (function () {
         });
 
         // generate random letters
-        var testCount = 100000;
+        var testCount = 1000000;
         for (var j = 0; j < testCount; j++) {
             var randomNumber = Math.random();
             var randomLetter = generateLetter(randomNumber, language, type, letter);
@@ -242,24 +242,17 @@ var RandomNameGenerator = (function () {
             }
         }
 
-        // calculate test percentages
+        // output results
+        console.log("Results:");
         letters.forEach(function (element, index) {
             var percent = letterCount[index] / testCount * 100;
-            letterCount[index] = Number(percent.toFixed(3));
-        });
+            var difference = Math.abs(frequency[index] - percent);
 
-        // calculate percent difference
-        var relativeDifference = [], absoluteDifference = [];
-        letters.forEach(function (element, index) {
-            var relative = Math.abs(letterCount[index] - frequency[index]) / ((letterCount[index] + frequency[index]) / 2) * 100;
-            var absolute = Math.abs(letterCount[index] - frequency[index]);
-            relativeDifference[index] = relative.toFixed(2);
-            absoluteDifference[index] = absolute.toFixed(2);
-        });
-
-        // output results
-        letters.forEach(function (element, index) {
-            console.log(letters[index] + ": " + relativeDifference[index] + "%|" + absoluteDifference[index]);
+            var results = letters[index] + ": ";
+            results += frequency[index].toFixed(3) + "%|";
+            results += percent.toFixed(3) + "%|";
+            results += difference.toFixed(3) + "%";
+            console.log(results);
         });
     }
 
