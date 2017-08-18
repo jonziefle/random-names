@@ -19,17 +19,22 @@ def main():
                 data[gender][distribution] = {}
                 data[gender][distribution]["frequency"] = {}
 
+                zeroList = [0] * len(data["letters"])
                 if (distribution == "monogram"):
-                    data[gender][distribution]["frequency"]["_"] = [0] * len(data["letters"])
+                    data[gender][distribution]["frequency"]["_"] = list(zeroList)
+
                 elif (distribution == "bigram"):
-                    letterList = ["_"] + data["letters"]
-                    for letter in letterList:
-                        data[gender][distribution]["frequency"][letter] = [0] * len(data["letters"])
+                    data[gender][distribution]["frequency"]["_"] = list(zeroList)
+                    for letter in data["letters"]:
+                        data[gender][distribution]["frequency"][letter] = list(zeroList)
+
                 elif (distribution == "trigram"):
-                    letterList = ["_"] + data["letters"]
-                    for letter1 in letterList:
-                        for letter2 in letterList:
-                            data[gender][distribution]["frequency"][letter1 + letter2] = [0] * len(data["letters"])
+                    data[gender][distribution]["frequency"]["__"] = list(zeroList)
+                    for letter in data["letters"]:
+                        data[gender][distribution]["frequency"]["_" + letter] = list(zeroList)
+                    for letter1 in data["letters"]:
+                        for letter2 in data["letters"]:
+                            data[gender][distribution]["frequency"][letter1 + letter2] = list(zeroList)
 
         # add counts for each letter
         for row in reader:
