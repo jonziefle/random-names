@@ -15,14 +15,21 @@ def main():
         # initialize frequency list for the length of letters list
         for gender in ["male", "female"]:
             data[gender] = {}
-            for distribution in ["monogram", "bigram"]:
+            for distribution in ["monogram", "bigram", "trigram"]:
                 data[gender][distribution] = {}
                 data[gender][distribution]["frequency"] = {}
 
-                data[gender][distribution]["frequency"]["_"] = [0] * len(data["letters"])
-                if (distribution == "bigram"):
-                    for letter in data["letters"]:
+                if (distribution == "monogram"):
+                    data[gender][distribution]["frequency"]["_"] = [0] * len(data["letters"])
+                elif (distribution == "bigram"):
+                    letterList = ["_"] + data["letters"]
+                    for letter in letterList:
                         data[gender][distribution]["frequency"][letter] = [0] * len(data["letters"])
+                elif (distribution == "trigram"):
+                    letterList = ["_"] + data["letters"]
+                    for letter1 in letterList:
+                        for letter2 in letterList:
+                            data[gender][distribution]["frequency"][letter1 + letter2] = [0] * len(data["letters"])
 
         # add counts for each letter
         for row in reader:
@@ -48,9 +55,18 @@ def main():
                     firstLetter = name[i - 1].lower()
                 data[gender]["bigram"]["frequency"][firstLetter][currentLetterIndex] += int(count)
 
+                # trigram
+                if (i == 0):
+                    firstLetter = "__"
+                elif (i == 1):
+                    firstLetter = "_" + name[0].lower()
+                else:
+                    firstLetter = name[i - 2].lower() + name[i - 1].lower()
+                data[gender]["trigram"]["frequency"][firstLetter][currentLetterIndex] += int(count)
+
         # divide counts by total sum to get frequency
         for gender in ["male", "female"]:
-            for distribution in ["monogram", "bigram"]:
+            for distribution in ["monogram", "bigram", "trigram"]:
                 for letter in data[gender][distribution]["frequency"]:
                     countSum = sum(data[gender][distribution]["frequency"][letter])
                     for index, count in enumerate(data[gender][distribution]["frequency"][letter]):
