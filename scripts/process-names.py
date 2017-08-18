@@ -2,100 +2,29 @@ import csv
 import json
 
 data = {
-    "letters": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
-    "male": {
-        "monogram": {
-            "frequency": {
-                "_": []
-            }
-        },
-        "bigram": {
-            "frequency": {
-                "_": [],
-                "a": [],
-                "b": [],
-                "c": [],
-                "d": [],
-                "e": [],
-                "f": [],
-                "g": [],
-                "h": [],
-                "i": [],
-                "j": [],
-                "k": [],
-                "l": [],
-                "m": [],
-                "n": [],
-                "o": [],
-                "p": [],
-                "q": [],
-                "r": [],
-                "s": [],
-                "t": [],
-                "u": [],
-                "v": [],
-                "w": [],
-                "x": [],
-                "y": [],
-                "z": []
-            }
-        }
-    },
-    "female": {
-        "monogram": {
-            "frequency": {
-                "_": []
-            }
-        },
-        "bigram": {
-            "frequency": {
-                "_": [],
-                "a": [],
-                "b": [],
-                "c": [],
-                "d": [],
-                "e": [],
-                "f": [],
-                "g": [],
-                "h": [],
-                "i": [],
-                "j": [],
-                "k": [],
-                "l": [],
-                "m": [],
-                "n": [],
-                "o": [],
-                "p": [],
-                "q": [],
-                "r": [],
-                "s": [],
-                "t": [],
-                "u": [],
-                "v": [],
-                "w": [],
-                "x": [],
-                "y": [],
-                "z": []
-            }
-        }
-    }
+    "letters": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 }
 
 def main():
     # open csv file
-    with open('../data/baby-names/yob2016.txt', newline='') as f:
+    fileInput = '../data/baby-names/yob2016.txt'
+    with open(fileInput, newline='') as f:
+        print("Processing: " + fileInput)
         reader = csv.reader(f)
 
         # initialize frequency list for the length of letters list
-        for letter in data["letters"]:
-            for gender in ["male", "female"]:
-                for distribution in ["monogram", "bigram"]:
-                    for key, val in data[gender][distribution]["frequency"].items():
-                        data[gender][distribution]["frequency"][key].append(0)
+        for gender in ["male", "female"]:
+            data[gender] = {}
+            for distribution in ["monogram", "bigram"]:
+                data[gender][distribution] = {}
+                data[gender][distribution]["frequency"] = {}
 
-        print(json.dumps(data, indent=2))
+                data[gender][distribution]["frequency"]["_"] = [0] * len(data["letters"])
+                if (distribution == "bigram"):
+                    for letter in data["letters"]:
+                        data[gender][distribution]["frequency"][letter] = [0] * len(data["letters"])
+
         # add counts for each letter
-        sum = 0
         for row in reader:
             name = row[0]
             if (row[1] == "M"):
@@ -111,7 +40,6 @@ def main():
 
                 # monogram
                 data[gender]["monogram"]["frequency"]["_"][currentLetterIndex] += int(count)
-                sum += int(count)
 
                 # bigram
                 if (i == 0):
@@ -122,15 +50,23 @@ def main():
 
         # divide counts by total sum to get frequency
         for gender in ["male", "female"]:
-            for index, count in enumerate(data[gender]["monogram"]["frequency"]["_"]):
-                frequency = count / sum
-                data[gender]["monogram"]["frequency"]["_"][index] = round(frequency, 4)
+            for distribution in ["monogram", "bigram"]:
+                for letter in data[gender][distribution]["frequency"]:
+                    countSum = sum(data[gender][distribution]["frequency"][letter])
+                    for index, count in enumerate(data[gender][distribution]["frequency"][letter]):
+                        if (count > 0):
+                            frequency = round(count / countSum * 100, 3)
+                        else:
+                            frequency = 0
+                        data[gender][distribution]["frequency"][letter][index] = frequency
 
     # print json data
-    print(json.dumps(data, indent=2))
+    #print(json.dumps(data, indent=2))
 
     # write json data
-    with open('../data/2016.json', 'w') as f:
+    fileOutput = '../data/2016.json'
+    with open(fileOutput, 'w') as f:
+        print("Writing: " + fileOutput)
         json.dump(data, f)
 
 if __name__ == "__main__":
