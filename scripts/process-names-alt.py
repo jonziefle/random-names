@@ -7,8 +7,10 @@ data = {}
 nGrams = ["monogram", "bigram", "trigram"]
 
 def main():
-    # open csv file
     fileInput = '../data/baby-names/yob2016.txt'
+    fileOutput = '../data/2016a-trigram.json'
+
+    # open csv file
     with open(fileInput, newline='') as f:
         print("Processing: " + fileInput)
         reader = csv.reader(f)
@@ -31,66 +33,40 @@ def main():
 
             # iterate through letters and multiplies by the name count
             for i in range(len(name)):
-                # monogram
-                letterKey = name[i].lower()
-                if letterKey in data[gender]["monogram"]["frequency"]:
-                    data[gender]["monogram"]["frequency"][letterKey] += int(count)
-                else:
-                    data[gender]["monogram"]["frequency"][letterKey] = int(count)
+                letterKey = ""
+                for distribution in nGrams:
+                    if (distribution == "monogram"):
+                        letterKey = name[i].lower()
 
-                # bigram
-                if (i >= 0):
-                    if (i == 0):
-                        letterKey = "_" + name[i]
-                    else:
-                        letterKey = name[i - 1] + name[i]
+                    elif (distribution == "bigram" and i >= 0):
+                        if (i == 0):
+                            letterKey = "_" + name[i]
+                        else:
+                            letterKey = name[i - 1] + name[i]
 
-                    letterKey = letterKey.lower()
-                    if letterKey in data[gender]["bigram"]["frequency"]:
-                        data[gender]["bigram"]["frequency"][letterKey] += int(count)
-                    else:
-                        data[gender]["bigram"]["frequency"][letterKey] = int(count)
+                    elif (distribution == "trigram" and i >= 1):
+                        if (i == 1):
+                            letterKey = "_" + name[i - 1] + name[i]
+                        else:
+                            letterKey = name[i - 2] + name[i - 1] + name[i]
 
-                # trigram
-                if (i >= 1):
-                    if (i == 1):
-                        letterKey = "_" + name[i - 1] + name[i]
-                    else:
-                        letterKey = name[i - 2] + name[i - 1] + name[i]
+                    elif (distribution == "quadgram" and i >= 2):
+                        if (i == 2):
+                            letterKey = "_" + name[i - 2] + name[i - 1] + name[i]
+                        else:
+                            letterKey = name[i - 3] + name[i - 2] + name[i - 1] + name[i]
 
-                    letterKey = letterKey.lower()
-                    if letterKey in data[gender]["trigram"]["frequency"]:
-                        data[gender]["trigram"]["frequency"][letterKey] += int(count)
-                    else:
-                        data[gender]["trigram"]["frequency"][letterKey] = int(count)
-
-                '''
-                # quadgram
-                if (i >= 2):
-                    if (i == 2):
-                        letterKey = "_" + name[i - 2] + name[i - 1] + name[i]
-                    else:
-                        letterKey = name[i - 3] + name[i - 2] + name[i - 1] + name[i]
+                    elif (distribution == "quintgram" and i >= 3):
+                        if (i == 3):
+                            letterKey = "_" + name[i - 3] + name[i - 2] + name[i - 1] + name[i]
+                        else:
+                            letterKey = name[i - 4] + name[i - 3] + name[i - 2] + name[i - 1] + name[i]
 
                     letterKey = letterKey.lower()
-                    if letterKey in data[gender]["quadgram"]["frequency"]:
-                        data[gender]["quadgram"]["frequency"][letterKey] += int(count)
+                    if letterKey in data[gender][distribution]["frequency"]:
+                        data[gender][distribution]["frequency"][letterKey] += int(count)
                     else:
-                        data[gender]["quadgram"]["frequency"][letterKey] = int(count)
-
-                # quintgram
-                if (i >= 3):
-                    if (i == 3):
-                        letterKey = "_" + name[i - 3] + name[i - 2] + name[i - 1] + name[i]
-                    else:
-                        letterKey = name[i - 4] + name[i - 3] + name[i - 2] + name[i - 1] + name[i]
-
-                    letterKey = letterKey.lower()
-                    if letterKey in data[gender]["quintgram"]["frequency"]:
-                        data[gender]["quintgram"]["frequency"][letterKey] += int(count)
-                    else:
-                        data[gender]["quintgram"]["frequency"][letterKey] = int(count)
-                '''
+                        data[gender][distribution]["frequency"][letterKey] = int(count)
 
         # divide counts by total sum to get frequency
         '''
@@ -108,7 +84,6 @@ def main():
     #print(json.dumps(data, sort_keys=True, indent=2))
 
     # write json data
-    fileOutput = '../data/2016a.json'
     with open(fileOutput, 'w') as f:
         print("Writing: " + fileOutput)
         json.dump(data, f, sort_keys=True)
