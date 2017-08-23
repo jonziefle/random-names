@@ -5,6 +5,8 @@ data = {
     "letters": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 }
 
+nGrams = ["monogram", "bigram", "trigram"]
+
 def main():
     # open csv file
     fileInput = '../data/baby-names/yob2016.txt'
@@ -15,7 +17,7 @@ def main():
         # initialize frequency list for the length of letters list
         for gender in ["male", "female"]:
             data[gender] = {}
-            for distribution in ["monogram", "bigram", "trigram"]:
+            for distribution in nGrams:
                 data[gender][distribution] = {}
                 data[gender][distribution]["frequency"] = {}
 
@@ -71,7 +73,7 @@ def main():
 
         # divide counts by total sum to get frequency
         for gender in ["male", "female"]:
-            for distribution in ["monogram", "bigram", "trigram"]:
+            for distribution in nGrams:
                 for letter in data[gender][distribution]["frequency"]:
                     countSum = sum(data[gender][distribution]["frequency"][letter])
                     for index, count in enumerate(data[gender][distribution]["frequency"][letter]):
