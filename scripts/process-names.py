@@ -23,23 +23,6 @@ def main():
                 data[gender][distribution] = {}
                 data[gender][distribution]["frequency"] = {}
 
-                zeroList = [0] * len(data["letters"])
-                if (distribution == "monogram"):
-                    data[gender][distribution]["frequency"]["_"] = list(zeroList)
-
-                elif (distribution == "bigram"):
-                    data[gender][distribution]["frequency"]["_"] = list(zeroList)
-                    for letter in data["letters"]:
-                        data[gender][distribution]["frequency"][letter] = list(zeroList)
-
-                elif (distribution == "trigram"):
-                    data[gender][distribution]["frequency"]["__"] = list(zeroList)
-                    for letter in data["letters"]:
-                        data[gender][distribution]["frequency"]["_" + letter] = list(zeroList)
-                    for letter1 in data["letters"]:
-                        for letter2 in data["letters"]:
-                            data[gender][distribution]["frequency"][letter1 + letter2] = list(zeroList)
-
         # add counts for each letter
         for row in reader:
             name = row[0]
@@ -73,7 +56,12 @@ def main():
                         else:
                             firstLetter = name[i - 2].lower() + name[i - 1].lower()
 
-                    data[gender][distribution]["frequency"][firstLetter][currentLetterIndex] += int(count)
+                    firstLetter = firstLetter.lower()
+                    if firstLetter in data[gender][distribution]["frequency"]:
+                        data[gender][distribution]["frequency"][firstLetter][currentLetterIndex] += int(count)
+                    else:
+                        data[gender][distribution]["frequency"][firstLetter] = [0] * len(data["letters"])
+                        data[gender][distribution]["frequency"][firstLetter][currentLetterIndex] = int(count)
 
         # divide counts by total sum to get frequency
         for gender in ["male", "female"]:
@@ -88,12 +76,12 @@ def main():
                         data[gender][distribution]["frequency"][letter][index] = frequency
 
     # print json data
-    #print(json.dumps(data, indent=2))
+    #print(json.dumps(data, sort_keys=True, indent=2))
 
     # write json data
     with open(fileOutput, 'w') as f:
         print("Writing: " + fileOutput)
-        json.dump(data, f)
+        json.dump(data, f, sort_keys=True)
 
 if __name__ == "__main__":
     # execute only if run as a script

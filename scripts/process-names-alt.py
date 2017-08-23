@@ -4,11 +4,11 @@ import json
 letterArray = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 data = {}
 
-nGrams = ["monogram", "bigram", "trigram"]
+nGrams = ["monogram", "bigram", "trigram", "quadgram", "quintgram"]
 
 def main():
     fileInput = '../data/baby-names/yob2016.txt'
-    fileOutput = '../data/2016a-trigram.json'
+    fileOutput = '../data/2016a-quintgram.json'
 
     # open csv file
     with open(fileInput, newline='') as f:
