@@ -34,6 +34,7 @@ def main():
             # iterate through letters and multiplies by the name count
             for i in range(len(name)):
                 letterKey = ""
+                
                 for distribution in nGrams:
                     if (distribution == "monogram"):
                         letterKey = name[i].lower()

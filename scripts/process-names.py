@@ -5,11 +5,11 @@ data = {
     "letters": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
 }
 
-nGrams = ["monogram", "bigram", "trigram"]
+nGrams = ["monogram", "bigram", "trigram", "quadgram", "quintgram"]
 
 def main():
     fileInput = '../data/baby-names/yob2016.txt'
-    fileOutput = '../data/2016-trigram.json'
+    fileOutput = '../data/2016-quintgram.json'
 
     # open csv file
     with open(fileInput, newline='') as f:
@@ -34,46 +34,55 @@ def main():
 
             # iterate through letters and multiplies by the name count
             for i in range(len(name)):
-                currentLetter = name[i].lower()
-                currentLetterIndex = ord(currentLetter) - 97
+                letterIndex = ord(name[i].lower()) - 97
+                letterKey = ""
 
-                firstLetter = ""
                 for distribution in nGrams:
                     if (distribution == "monogram"):
-                        firstLetter = "_"
+                        letterKey = "_"
 
-                    elif (distribution == "bigram"):
+                    elif (distribution == "bigram" and i >= 0):
                         if (i == 0):
-                            firstLetter = "_"
+                            letterKey = "_"
                         else:
-                            firstLetter = name[i - 1].lower()
+                            letterKey = name[i - 1]
 
-                    elif (distribution == "trigram"):
-                        if (i == 0):
-                            firstLetter = "__"
-                        elif (i == 1):
-                            firstLetter = "_" + name[0].lower()
+                    elif (distribution == "trigram" and i >= 1):
+                        if (i == 1):
+                            letterKey = "_" + name[i - 1]
                         else:
-                            firstLetter = name[i - 2].lower() + name[i - 1].lower()
+                            letterKey = name[i - 2] + name[i - 1]
 
-                    firstLetter = firstLetter.lower()
-                    if firstLetter in data[gender][distribution]["frequency"]:
-                        data[gender][distribution]["frequency"][firstLetter][currentLetterIndex] += int(count)
+                    elif (distribution == "quadgram" and i >= 2):
+                        if (i == 2):
+                            letterKey = "_" + name[i - 2] + name[i - 1]
+                        else:
+                            letterKey = name[i - 3] + name[i - 2] + name[i - 1]
+
+                    elif (distribution == "quintgram" and i >= 3):
+                        if (i == 3):
+                            letterKey = "_" + name[i - 3] + name[i - 2] + name[i - 1]
+                        else:
+                            letterKey = name[i - 4] + name[i - 3] + name[i - 2] + name[i - 1]
+
+                    letterKey = letterKey.lower()
+                    if letterKey in data[gender][distribution]["frequency"]:
+                        data[gender][distribution]["frequency"][letterKey][letterIndex] += int(count)
                     else:
-                        data[gender][distribution]["frequency"][firstLetter] = [0] * len(data["letters"])
-                        data[gender][distribution]["frequency"][firstLetter][currentLetterIndex] = int(count)
+                        data[gender][distribution]["frequency"][letterKey] = [0] * len(data["letters"])
+                        data[gender][distribution]["frequency"][letterKey][letterIndex] = int(count)
 
         # divide counts by total sum to get frequency
         for gender in ["male", "female"]:
             for distribution in nGrams:
-                for letter in data[gender][distribution]["frequency"]:
-                    countSum = sum(data[gender][distribution]["frequency"][letter])
-                    for index, count in enumerate(data[gender][distribution]["frequency"][letter]):
+                for letterKey in data[gender][distribution]["frequency"]:
+                    countSum = sum(data[gender][distribution]["frequency"][letterKey])
+                    for letterIndex, count in enumerate(data[gender][distribution]["frequency"][letterKey]):
                         if (count > 0):
                             frequency = round(count / countSum * 100, 3)
                         else:
                             frequency = 0
-                        data[gender][distribution]["frequency"][letter][index] = frequency
+                        data[gender][distribution]["frequency"][letterKey][letterIndex] = frequency
 
     # print json data
     #print(json.dumps(data, sort_keys=True, indent=2))
