@@ -8,8 +8,10 @@ data = {
 nGrams = ["monogram", "bigram", "trigram"]
 
 def main():
-    # open csv file
     fileInput = '../data/baby-names/yob2016.txt'
+    fileOutput = '../data/2016-trigram.json'
+
+    # open csv file
     with open(fileInput, newline='') as f:
         print("Processing: " + fileInput)
         reader = csv.reader(f)
@@ -52,24 +54,26 @@ def main():
                 currentLetter = name[i].lower()
                 currentLetterIndex = ord(currentLetter) - 97
 
-                # monogram
-                data[gender]["monogram"]["frequency"]["_"][currentLetterIndex] += int(count)
+                firstLetter = ""
+                for distribution in nGrams:
+                    if (distribution == "monogram"):
+                        firstLetter = "_"
 
-                # bigram
-                if (i == 0):
-                    firstLetter = "_"
-                else:
-                    firstLetter = name[i - 1].lower()
-                data[gender]["bigram"]["frequency"][firstLetter][currentLetterIndex] += int(count)
+                    elif (distribution == "bigram"):
+                        if (i == 0):
+                            firstLetter = "_"
+                        else:
+                            firstLetter = name[i - 1].lower()
 
-                # trigram
-                if (i == 0):
-                    firstLetter = "__"
-                elif (i == 1):
-                    firstLetter = "_" + name[0].lower()
-                else:
-                    firstLetter = name[i - 2].lower() + name[i - 1].lower()
-                data[gender]["trigram"]["frequency"][firstLetter][currentLetterIndex] += int(count)
+                    elif (distribution == "trigram"):
+                        if (i == 0):
+                            firstLetter = "__"
+                        elif (i == 1):
+                            firstLetter = "_" + name[0].lower()
+                        else:
+                            firstLetter = name[i - 2].lower() + name[i - 1].lower()
+
+                    data[gender][distribution]["frequency"][firstLetter][currentLetterIndex] += int(count)
 
         # divide counts by total sum to get frequency
         for gender in ["male", "female"]:
@@ -87,7 +91,6 @@ def main():
     #print(json.dumps(data, indent=2))
 
     # write json data
-    fileOutput = '../data/2016.json'
     with open(fileOutput, 'w') as f:
         print("Writing: " + fileOutput)
         json.dump(data, f)
