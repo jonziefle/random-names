@@ -1,15 +1,14 @@
 import csv
 import json
 
-data = {
-    "letters": ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
-}
-
-nGrams = ["1gram", "2gram", "3gram", "4gram", "5gram"]
+letterArray = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"]
+ngramArray = ["1gram", "2gram", "3gram", "4gram", "5gram"]
+genderArray = ["male", "female"]
+data = {}
 
 def main():
     fileInput = '../data/baby-names/yob2016.txt'
-    fileOutput = '../data/2016-5gram.json'
+    fileOutput = '../data/2016.json'
 
     # open csv file
     with open(fileInput, newline='') as f:
@@ -17,11 +16,10 @@ def main():
         reader = csv.reader(f)
 
         # initialize frequency list for the length of letters list
-        for gender in ["male", "female"]:
+        for gender in genderArray:
             data[gender] = {}
-            for distribution in nGrams:
-                data[gender][distribution] = {}
-                data[gender][distribution]["frequency"] = {}
+            for ngram in ngramArray:
+                data[gender][ngram] = {}
 
         # add counts for each letter
         for row in reader:
@@ -34,55 +32,51 @@ def main():
 
             # iterate through letters and multiplies by the name count
             for i in range(len(name)):
-                letterIndex = ord(name[i].lower()) - 97
-                for distribution in nGrams:
-                    letterKey = ""
-                    if (distribution == "1gram"):
-                        letterKey = "_"
-
-                    elif (distribution == "2gram" and i >= 0):
+                afterLetter = name[i].lower()
+                for ngram in ngramArray:
+                    beforeLetter = ""
+                    if (ngram == "1gram"):
+                        beforeLetter = "_"
+                    elif (ngram == "2gram" and i >= 0):
                         if (i == 0):
-                            letterKey = "_"
+                            beforeLetter = "_"
                         else:
-                            letterKey = name[i - 1]
-
-                    elif (distribution == "3gram" and i >= 1):
+                            beforeLetter = name[i-1:i]
+                    elif (ngram == "3gram" and i >= 1):
                         if (i == 1):
-                            letterKey = "_" + name[i - 1]
+                            beforeLetter = "_" + name[i-1:i]
                         else:
-                            letterKey = name[i - 2] + name[i - 1]
-
-                    elif (distribution == "4gram" and i >= 2):
+                            beforeLetter = name[i-2:i]
+                    elif (ngram == "4gram" and i >= 2):
                         if (i == 2):
-                            letterKey = "_" + name[i - 2] + name[i - 1]
+                            beforeLetter = "_" + name[i-2:i]
                         else:
-                            letterKey = name[i - 3] + name[i - 2] + name[i - 1]
-
-                    elif (distribution == "5gram" and i >= 3):
+                            beforeLetter = name[i-3:i]
+                    elif (ngram == "5gram" and i >= 3):
                         if (i == 3):
-                            letterKey = "_" + name[i - 3] + name[i - 2] + name[i - 1]
+                            beforeLetter = "_" + name[i-3:i]
                         else:
-                            letterKey = name[i - 4] + name[i - 3] + name[i - 2] + name[i - 1]
+                            beforeLetter = name[i-4:i]
 
-                    if (letterKey != ""):
-                        letterKey = letterKey.lower()
-                        if letterKey in data[gender][distribution]["frequency"]:
-                            data[gender][distribution]["frequency"][letterKey][letterIndex] += int(count)
+                    if (beforeLetter != ""):
+                        beforeLetter = beforeLetter.lower()
+                        if (beforeLetter in data[gender][ngram]):
+                            if (afterLetter in data[gender][ngram][beforeLetter]):
+                                data[gender][ngram][beforeLetter][afterLetter] += int(count)
+                            else:
+                                data[gender][ngram][beforeLetter][afterLetter] = int(count)
                         else:
-                            data[gender][distribution]["frequency"][letterKey] = [0] * len(data["letters"])
-                            data[gender][distribution]["frequency"][letterKey][letterIndex] = int(count)
+                            data[gender][ngram][beforeLetter] = {}
+                            data[gender][ngram][beforeLetter][afterLetter] = int(count)
 
         # divide counts by total sum to get frequency
-        for gender in ["male", "female"]:
-            for distribution in nGrams:
-                for letterKey in data[gender][distribution]["frequency"]:
-                    countSum = sum(data[gender][distribution]["frequency"][letterKey])
-                    for letterIndex, count in enumerate(data[gender][distribution]["frequency"][letterKey]):
-                        if (count > 0):
-                            frequency = round(count / countSum * 100, 3)
-                        else:
-                            frequency = 0
-                        data[gender][distribution]["frequency"][letterKey][letterIndex] = frequency
+        for gender in genderArray:
+            for ngram in ngramArray:
+                for beforeLetter in data[gender][ngram]:
+                    afterLetterCountSum = sum(data[gender][ngram][beforeLetter].values())
+                    for afterLetter, afterLetterCount in data[gender][ngram][beforeLetter].items():
+                        afterLetterFrequency = round(afterLetterCount / afterLetterCountSum * 100, 3)
+                        data[gender][ngram][beforeLetter][afterLetter] = afterLetterFrequency
 
     # print json data
     #print(json.dumps(data, sort_keys=True, indent=2))
