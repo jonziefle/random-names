@@ -210,8 +210,50 @@ var RandomNameGenerator = (function () {
     }
 
     /***** Public Functions *********************************************************/
+    // getter for language frequency
     function getLanguageFrequency() {
         return languageFrequency;
+    }
+
+    // test for the random letter generator
+    function testGenerateLetter() {
+        var language = "english";
+        var type = "monogram";
+        var letter = "_";
+
+        var letters = languageFrequency[language]["letters"];
+        var frequency = languageFrequency[language][type]["frequency"][letter];
+
+        // initialize letter count array
+        var letterCount = [];
+        letters.forEach(function (element, index) {
+            letterCount[index] = 0;
+        });
+
+        // generate random letters
+        var testCount = 1000000;
+        for (var j = 0; j < testCount; j++) {
+            var randomNumber = Math.random();
+            var randomLetter = generateLetter(randomNumber, language, type, letter);
+
+            var index = letters.indexOf(randomLetter);
+            if (index !== -1) {
+                letterCount[index]++;
+            }
+        }
+
+        // output results
+        console.log("Results:");
+        letters.forEach(function (element, index) {
+            var percent = letterCount[index] / testCount * 100;
+            var difference = Math.abs(frequency[index] - percent);
+
+            var results = letters[index] + ": ";
+            results += frequency[index].toFixed(3) + "%|";
+            results += percent.toFixed(3) + "%|";
+            results += difference.toFixed(3) + "%";
+            console.log(results);
+        });
     }
 
     return {
@@ -235,7 +277,8 @@ var RandomNameGenerator = (function () {
                 populateLetterSelect(language);
             });
         },
-        getLanguageFrequency: getLanguageFrequency
+        getLanguageFrequency: getLanguageFrequency,
+        testGenerateLetter: testGenerateLetter
     }
 })();
 RandomNameGenerator.init();
