@@ -28,7 +28,6 @@ var RandomNameGenerator = (function () {
 
                 // populate dropdowns
                 populateSelect(wordGenerator, languageFrequency, "language");
-                populateSelectLength(wordGenerator);
 
                 // enable name generation button
                 wordGenerator.find(".submit-button").prop("disabled", false);
@@ -51,7 +50,6 @@ var RandomNameGenerator = (function () {
                 // populate dropdowns
                 populateSelect(nameGenerator, nameFrequency, "gender");
                 populateSelect(nameGenerator, nameFrequency["female"]["1gram"]["_"], "letter");
-                populateSelectLength(nameGenerator);
 
                 // enable name generation button
                 nameGenerator.find(".submit-button").prop("disabled", false);
@@ -91,29 +89,16 @@ var RandomNameGenerator = (function () {
         }
     }
 
-    // populate the length selector
-    function populateSelectLength(parent) {
-        var optionHTML = "";
-        for (var i = lengthMin; i <= lengthMax; i++) {
-            optionHTML += "<option value='" + i + "'>" + i + "</option>";
-        }
-        parent.find(".selector[name='length']").append(optionHTML);
-    }
-
     // generate names
-    function generateName(parent, frequencyObject, language, letter, length) {
+    function generateName(parent, frequencyObject, language, letter) {
         // determine language
         if (language === "random") {
             var keys = Object.keys(frequencyObject);
             language = keys[Math.floor(Math.random() * keys.length)];
         }
 
-        // determine word length
-        if (length === "random") {
-            length = randomInt(lengthMin, lengthMax);
-        }
-
         // pregenerate random numbers
+        var length = randomInt(lengthMin, lengthMax);
         var randomNumbers = [];
         for (var i = 0; i < length; i++) {
             randomNumbers[i] = Math.random();
@@ -121,7 +106,6 @@ var RandomNameGenerator = (function () {
 
         // generate names
         var nameObject = {};
-
         $.each(frequencyObject[language], function (nGram, nGramObject) {
             var name = "";
             for (var i = 0; i < length; i++) {
@@ -304,9 +288,8 @@ var RandomNameGenerator = (function () {
                 var parent = $(this).closest(".word-generator");
                 var language = parent.find(".selector[name='language']").val();
                 var letter = parent.find(".selector[name='letter']").val();
-                var length = parent.find(".selector[name='length']").val();
 
-                generateName(parent, languageFrequency, language, letter, length);
+                generateName(parent, languageFrequency, language, letter);
             });
 
             // populate letter selector based on language
@@ -322,9 +305,8 @@ var RandomNameGenerator = (function () {
                 var parent = $(this).closest(".word-generator");
                 var gender = parent.find(".selector[name='gender']").val();
                 var letter = parent.find(".selector[name='letter']").val();
-                var length = parent.find(".selector[name='length']").val();
 
-                generateName(parent, nameFrequency, gender, letter, length);
+                generateName(parent, nameFrequency, gender, letter);
             });
         },
         getLanguageFrequency: getLanguageFrequency,
