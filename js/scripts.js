@@ -236,6 +236,11 @@ var RandomNameGenerator = (function () {
         return languageFrequency;
     }
 
+    // getter for name frequency
+    function getNameFrequency() {
+        return nameFrequency;
+    }
+
     // test for the random letter generator
     function testGenerateLetter() {
         var language = "english";
@@ -310,6 +315,7 @@ var RandomNameGenerator = (function () {
             });
         },
         getLanguageFrequency: getLanguageFrequency,
+        getNameFrequency: getNameFrequency,
         testGenerateLetter: testGenerateLetter
     }
 })();
