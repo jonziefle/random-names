@@ -40,26 +40,31 @@ def main():
                     elif (ngram == "2gram" and i >= 0):
                         if (i == 0):
                             beforeLetter = "_"
+                            afterLetter = name[0:1]
                         else:
                             beforeLetter = name[i-1:i]
                     elif (ngram == "3gram" and i >= 1):
                         if (i == 1):
-                            beforeLetter = "_" + name[i-1:i]
+                            beforeLetter = "_"
+                            afterLetter = name[0:2]
                         else:
                             beforeLetter = name[i-2:i]
                     elif (ngram == "4gram" and i >= 2):
                         if (i == 2):
-                            beforeLetter = "_" + name[i-2:i]
+                            beforeLetter = "_"
+                            afterLetter = name[0:3]
                         else:
                             beforeLetter = name[i-3:i]
                     elif (ngram == "5gram" and i >= 3):
                         if (i == 3):
-                            beforeLetter = "_" + name[i-3:i]
+                            beforeLetter = "_"
+                            afterLetter = name[0:4]
                         else:
                             beforeLetter = name[i-4:i]
 
                     if (beforeLetter != ""):
                         beforeLetter = beforeLetter.lower()
+                        afterLetter = afterLetter.lower()
                         if (beforeLetter in data[gender][ngram]):
                             if (afterLetter in data[gender][ngram][beforeLetter]):
                                 data[gender][ngram][beforeLetter][afterLetter] += int(count)
@@ -75,7 +80,7 @@ def main():
                 for beforeLetter in data[gender][ngram]:
                     afterLetterCountSum = sum(data[gender][ngram][beforeLetter].values())
                     for afterLetter, afterLetterCount in data[gender][ngram][beforeLetter].items():
-                        afterLetterFrequency = round(afterLetterCount / afterLetterCountSum * 100, 3)
+                        afterLetterFrequency = round(afterLetterCount / afterLetterCountSum * 100, 4)
                         data[gender][ngram][beforeLetter][afterLetter] = afterLetterFrequency
 
     # print json data
