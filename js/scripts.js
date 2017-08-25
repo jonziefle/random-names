@@ -2,7 +2,7 @@ var RandomNameGenerator = (function () {
     // global variables
     var wordGenerator = $("#WordGenerator");
     var nameGenerator = $("#NameGenerator");
-    var lengthMin = 3, lengthMax = 10;
+    var lengthMin = 4, lengthMax = 10;
     var languageFrequency = {};
     var nameFrequency = {};
 
@@ -89,8 +89,8 @@ var RandomNameGenerator = (function () {
         }
     }
 
-    // generate names
-    function generateName(parent, frequencyObject, language, letter) {
+    // generate words
+    function generateWord(parent, frequencyObject, language, letter) {
         // determine language
         if (language === "random") {
             var keys = Object.keys(frequencyObject);
@@ -99,54 +99,78 @@ var RandomNameGenerator = (function () {
 
         // pregenerate random numbers
         var length = randomInt(lengthMin, lengthMax);
-        var randomNumbers = [];
-        for (var i = 0; i < length; i++) {
-            randomNumbers[i] = Math.random();
-        }
 
         // generate names
         var nameObject = {};
         $.each(frequencyObject[language], function (nGram, nGramObject) {
             var name = "";
-            for (var i = 0; i < length; i++) {
-                if (nGram == "1gram") {
-                    if (i == 0) {
-                        if (letter === "random") {
-                            name += generateLetter(frequencyObject, randomNumbers[i], language, "1gram", "_");
-                        } else {
-                            name += letter;
-                        }
-                    } else {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "1gram", "_");
-                    }
-                } else if (nGram == "2gram" && i >= 0) {
-                    if (i == 0) {
-                        if (letter === "random") {
-                            name += generateLetter(frequencyObject, randomNumbers[i], language, "2gram", "_");
-                        } else {
-                            name += letter;
-                        }
-                    } else {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "2gram", name.slice(i - 1, i));
-                    }
-                } else if (nGram == "3gram" && i >= 1) {
-                    if (i == 1) {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "3gram", "_");
-                    } else {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "3gram", name.slice(i - 2, i));
-                    }
-                } else if (nGram == "4gram" && i >= 2) {
-                    if (i == 2) {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "4gram", "_");
-                    } else {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "4gram", name.slice(i - 3, i));
-                    }
-                } else if (nGram == "5gram" && i >= 3) {
-                    if (i == 3) {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "5gram", "_");
-                    } else {
-                        name += generateLetter(frequencyObject, randomNumbers[i], language, "5gram", name.slice(i - 4, i));
-                    }
+            var index;
+            if (nGram === "1gram") {
+                // first letter(s)
+                if (letter === "random") {
+                    name += generateLetter(frequencyObject, language, nGram, "_");
+                } else {
+                    name += letter;
+                }
+
+                // remaining letters
+                for (index = 1; index < length; index++) {
+                    name += generateLetter(frequencyObject, language, nGram, "_");
+                }
+            }
+            else if (nGram === "2gram") {
+                // first letter(s)
+                if (letter === "random") {
+                    name += generateLetter(frequencyObject, language, nGram, "_");
+                } else {
+                    name += letter;
+                }
+
+                // remaining letters
+                for (index = 1; index < length; index++) {
+                    name += generateLetter(frequencyObject, language, nGram, name.slice(index - 1, index));
+                }
+            }
+            else if (nGram === "3gram") {
+                // first letter(s)
+                if (letter === "random") {
+                    name += generateLetter(frequencyObject, language, nGram, "_");
+                } else {
+                    name += letter;
+                    name += generateLetter(frequencyObject, language, nGram, "_" + letter);
+                }
+
+                // remaining letters
+                for (index = 2; index < length; index++) {
+                    name += generateLetter(frequencyObject, language, "3gram", name.slice(index - 2, index));
+                }
+            }
+            else if (nGram === "4gram") {
+                // first letter(s)
+                if (letter === "random") {
+                    name += generateLetter(frequencyObject, language, nGram, "_");
+                } else {
+                    name += letter;
+                    name += generateLetter(frequencyObject, language, nGram, "_" + letter);
+                }
+
+                // remaining letters
+                for (index = 3; index < length; index++) {
+                    name += generateLetter(frequencyObject, language, nGram, name.slice(index - 3, index));
+                }
+            }
+            else if (nGram === "5gram") {
+                // first letter(s)
+                if (letter === "random") {
+                    name += generateLetter(frequencyObject, language, nGram, "_");
+                } else {
+                    name += letter;
+                    name += generateLetter(frequencyObject, language, nGram, "_" + letter);
+                }
+
+                // remaining letters
+                for (index = 4; index < length; index++) {
+                    name += generateLetter(frequencyObject, language, nGram, name.slice(index - 4, index));
                 }
             }
 
@@ -158,7 +182,7 @@ var RandomNameGenerator = (function () {
     }
 
     // generate single letter
-    function generateLetter(frequencyObject, randomNumber, language, nGram, beforeLetter) {
+    function generateLetter(frequencyObject, language, nGram, beforeLetter) {
         if (!frequencyObject[language][nGram].hasOwnProperty(beforeLetter)) {
             return "_"
         }
@@ -176,7 +200,7 @@ var RandomNameGenerator = (function () {
 
         // generate integer
         var randomMax = cumulativeArray[cumulativeArray.length - 1];
-        var randomLetter = Math.floor(randomNumber * randomMax);
+        var randomLetter = Math.floor(Math.random() * randomMax);
 
         // generate letter
         for (var i = 0; i < letterArray.length; i++) {
@@ -265,8 +289,7 @@ var RandomNameGenerator = (function () {
                 console.log("Completion: " + j / testCount * 100 + "%")
             }
 
-            var randomNumber = Math.random();
-            var randomLetter = generateLetter(languageFrequency, randomNumber, language, nGram, beforeLetter);
+            var randomLetter = generateLetter(languageFrequency, language, nGram, beforeLetter);
 
             var index = letterArray.indexOf(randomLetter);
             if (index !== -1) {
@@ -300,7 +323,7 @@ var RandomNameGenerator = (function () {
                 var language = parent.find(".selector[name='language']").val();
                 var letter = parent.find(".selector[name='letter']").val();
 
-                generateName(parent, languageFrequency, language, letter);
+                generateWord(parent, languageFrequency, language, letter);
             });
 
             // populate letter selector based on language
@@ -317,7 +340,7 @@ var RandomNameGenerator = (function () {
                 var gender = parent.find(".selector[name='gender']").val();
                 var letter = parent.find(".selector[name='letter']").val();
 
-                generateName(parent, nameFrequency, gender, letter);
+                generateWord(parent, nameFrequency, gender, letter);
             });
         },
         getLanguageFrequency: getLanguageFrequency,
