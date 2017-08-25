@@ -244,25 +244,31 @@ var RandomNameGenerator = (function () {
     // test for the random letter generator
     function testGenerateLetter() {
         var language = "english";
-        var type = "monogram";
-        var letter = "_";
+        var nGram = "1gram";
+        var beforeLetter = "_";
 
-        var letters = languageFrequency[language]["letters"];
-        var frequency = languageFrequency[language][type]["frequency"][letter];
+        var letterArray = Object.keys(languageFrequency[language][nGram][beforeLetter]);
+        var frequency = languageFrequency[language][nGram][beforeLetter];
 
         // initialize letter count array
         var letterCount = [];
-        letters.forEach(function (element, index) {
+        letterArray.forEach(function (element, index) {
             letterCount[index] = 0;
         });
 
         // generate random letters
+        console.log("Testing:");
         var testCount = 1000000;
-        for (var j = 0; j < testCount; j++) {
-            var randomNumber = Math.random();
-            var randomLetter = generateLetter(randomNumber, language, type, letter);
+        for (var j = 1; j <= testCount; j++) {
+            var increment = testCount / 10;
+            if (j % increment === 0) {
+                console.log("Completion: " + j / testCount * 100 + "%")
+            }
 
-            var index = letters.indexOf(randomLetter);
+            var randomNumber = Math.random();
+            var randomLetter = generateLetter(languageFrequency, randomNumber, language, nGram, beforeLetter);
+
+            var index = letterArray.indexOf(randomLetter);
             if (index !== -1) {
                 letterCount[index]++;
             }
@@ -270,12 +276,12 @@ var RandomNameGenerator = (function () {
 
         // output results
         console.log("Results:");
-        letters.forEach(function (element, index) {
+        letterArray.forEach(function (letter, index) {
             var percent = letterCount[index] / testCount * 100;
-            var difference = Math.abs(frequency[index] - percent);
+            var difference = Math.abs(frequency[letter] - percent);
 
-            var results = letters[index] + ": ";
-            results += frequency[index].toFixed(3) + "%|";
+            var results = letter + ": ";
+            results += frequency[letter].toFixed(3) + "%|";
             results += percent.toFixed(3) + "%|";
             results += difference.toFixed(3) + "%";
             console.log(results);
