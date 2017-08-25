@@ -73,10 +73,10 @@ var RandomNameGenerator = (function () {
     }
 
     // populate the letter selector
-    function populateSelectLetter(parent, language) {
+    function populateSelectLetter(parent, frequencyObject, language) {
         var optionHTML = "";
         if (language !== "random") {
-            $.each(languageFrequency[language]["1gram"]["_"], function (letter, letterObject) {
+            $.each(frequencyObject[language]["1gram"]["_"], function (letter, letterObject) {
                 optionHTML += "<option value='" + letter + "'>" + capitalizeLetter(letter) + "</option>";
             })
         }
@@ -147,31 +147,19 @@ var RandomNameGenerator = (function () {
                     }
                 } else if (nGram == "3gram" && i >= 1) {
                     if (i == 1) {
-                        if (letter === "random") {
-                            name += generateLetter(frequencyObject, randomNumbers[i], language, "3gram", "_");
-                        } else {
-                            name += letter;
-                        }
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "3gram", "_");
                     } else {
                         name += generateLetter(frequencyObject, randomNumbers[i], language, "3gram", name.slice(i - 2, i));
                     }
                 } else if (nGram == "4gram" && i >= 2) {
                     if (i == 2) {
-                        if (letter === "random") {
-                            name += generateLetter(frequencyObject, randomNumbers[i], language, "4gram", "_");
-                        } else {
-                            name += letter;
-                        }
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "4gram", "_");
                     } else {
                         name += generateLetter(frequencyObject, randomNumbers[i], language, "4gram", name.slice(i - 3, i));
                     }
                 } else if (nGram == "5gram" && i >= 3) {
                     if (i == 3) {
-                        if (letter === "random") {
-                            name += generateLetter(frequencyObject, randomNumbers[i], language, "5gram", "_");
-                        } else {
-                            name += letter;
-                        }
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "5gram", "_");
                     } else {
                         name += generateLetter(frequencyObject, randomNumbers[i], language, "5gram", name.slice(i - 4, i));
                     }
@@ -323,25 +311,20 @@ var RandomNameGenerator = (function () {
 
             // populate letter selector based on language
             wordGenerator.find(".selector[name='language']").on("change", function () {
+                var parent = $(this).closest(".word-generator");
                 var language = $(this).val();
-                populateSelectLetter(language);
-            });
 
+                populateSelectLetter(parent, languageFrequency, language);
+            });
 
             // click handler for name generation
             nameGenerator.find(".submit-button").on("click", function () {
                 var parent = $(this).closest(".word-generator");
-                var language = parent.find(".selector[name='gender']").val();
+                var gender = parent.find(".selector[name='gender']").val();
                 var letter = parent.find(".selector[name='letter']").val();
                 var length = parent.find(".selector[name='length']").val();
 
-                generateName(parent, nameFrequency, language, letter, length);
-            });
-
-            // populate letter selector based on language
-            nameGenerator.find(".selector[name='gender']").on("change", function () {
-                var language = $(this).val();
-                populateSelectLetter(language);
+                generateName(parent, nameFrequency, gender, letter, length);
             });
         },
         getLanguageFrequency: getLanguageFrequency,
