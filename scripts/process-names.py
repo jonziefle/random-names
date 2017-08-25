@@ -23,7 +23,7 @@ def main():
 
         # add counts for each letter
         for row in reader:
-            name = row[0]
+            name = row[0].lower()
             if (row[1] == "M"):
                 gender = "male"
             else:
@@ -31,40 +31,52 @@ def main():
             count = row[2]
 
             # iterate through letters and multiplies by the name count
-            for i in range(len(name)):
-                afterLetter = name[i].lower()
+            nameLength = len(name)
+            for i in range(nameLength):
                 for ngram in ngramArray:
                     beforeLetter = ""
                     if (ngram == "1gram"):
                         beforeLetter = "_"
-                    elif (ngram == "2gram" and i >= 0):
+                        afterLetter = name[i]
+                    elif (ngram == "2gram" and nameLength >= 1):
                         if (i == 0):
                             beforeLetter = "_"
                             afterLetter = name[0:1]
-                        else:
+                        elif (i >= 1):
                             beforeLetter = name[i-1:i]
-                    elif (ngram == "3gram" and i >= 1):
-                        if (i == 1):
+                            afterLetter = name[i]
+                    elif (ngram == "3gram" and nameLength >= 2):
+                        if (i == 0):
+                            beforeLetter = "_" + name[0]
+                            afterLetter = name[1:2]
+                        elif (i == 1):
                             beforeLetter = "_"
                             afterLetter = name[0:2]
-                        else:
+                        elif (i >= 2):
                             beforeLetter = name[i-2:i]
-                    elif (ngram == "4gram" and i >= 2):
-                        if (i == 2):
+                            afterLetter = name[i]
+                    elif (ngram == "4gram" and nameLength >= 3):
+                        if (i == 1):
+                            beforeLetter = "_" + name[0]
+                            afterLetter = name[1:3]
+                        elif (i == 2):
                             beforeLetter = "_"
                             afterLetter = name[0:3]
-                        else:
+                        elif (i >= 3):
                             beforeLetter = name[i-3:i]
-                    elif (ngram == "5gram" and i >= 3):
-                        if (i == 3):
+                            afterLetter = name[i]
+                    elif (ngram == "5gram" and nameLength >= 4):
+                        if (i == 2):
+                            beforeLetter = "_" + name[0]
+                            afterLetter = name[1:4]
+                        elif (i == 3):
                             beforeLetter = "_"
                             afterLetter = name[0:4]
-                        else:
+                        elif (i >= 4):
                             beforeLetter = name[i-4:i]
+                            afterLetter = name[i]
 
                     if (beforeLetter != ""):
-                        beforeLetter = beforeLetter.lower()
-                        afterLetter = afterLetter.lower()
                         if (beforeLetter in data[gender][ngram]):
                             if (afterLetter in data[gender][ngram][beforeLetter]):
                                 data[gender][ngram][beforeLetter][afterLetter] += int(count)
