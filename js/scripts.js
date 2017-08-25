@@ -124,51 +124,69 @@ var RandomNameGenerator = (function () {
 
         $.each(frequencyObject[language], function (nGram, nGramObject) {
             var name = "";
-
-            if (nGram == "1gram") {
-                // generate first letter
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, randomNumbers[0], language, "1gram", "_");
-                } else {
-                    name += letter;
-                }
-
-                // generate remaining letters
-                for (var i = 1; i < length; i++) {
-                    name += generateLetter(frequencyObject, randomNumbers[i], language, "1gram", "_");
-                }
-
-                // assign name
-                nameObject[nGram] = name;
-            } else if (nGram == "2gram") {
-                // generate first letter
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, randomNumbers[0], language, "2gram", "_");
-                } else {
-                    name += letter;
-                }
-
-                // generate remaining letters
-                for (var i = 1; i < length; i++) {
-                    name += generateLetter(frequencyObject, randomNumbers[i], language, "2gram", name[i - 1]);
-                }
-
-                // assign name
-                nameObject[nGram] = name;
-            } else if (nGram == "3gram") {
-                // generate first letter
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, randomNumbers[0], language, "2gram", "_");
-                } else {
-                    name += letter;
-                }
-
-                // generate second letter
-                name += generateLetter(frequencyObject, randomNumbers[0], language, "3gram", "_" + name[0]);
-
-                // generate remaining letters
-                for (var i = 2; i < length; i++) {
-                    name += generateLetter(frequencyObject, randomNumbers[i], language, "3gram", name[i - 1] + name[i - 2]);
+            for (var i = 0; i < length; i++) {
+                if (nGram == "1gram") {
+                    if (i == 0) {
+                        if (letter === "random") {
+                            name += generateLetter(frequencyObject, randomNumbers[0], language, "1gram", "_");
+                        } else {
+                            name += letter;
+                        }
+                    } else {
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "1gram", "_");
+                    }
+                } else if (nGram == "2gram") {
+                    if (i == 0) {
+                        if (letter === "random") {
+                            name += generateLetter(frequencyObject, randomNumbers[0], language, "2gram", "_");
+                        } else {
+                            name += letter;
+                        }
+                    } else {
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "2gram", name[i - 1]);
+                    }
+                } else if (nGram == "3gram") {
+                    if (i == 0) {
+                        if (letter === "random") {
+                            name += generateLetter(frequencyObject, randomNumbers[0], language, "2gram", "_");
+                        } else {
+                            name += letter;
+                        }
+                    } else if (i == 1) {
+                        name += generateLetter(frequencyObject, randomNumbers[0], language, "3gram", "_" + name[0]);
+                    } else {
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "3gram", name[i - 1] + name[i - 2]);
+                    }
+                } else if (nGram == "4gram") {
+                    if (i == 0) {
+                        if (letter === "random") {
+                            name += generateLetter(frequencyObject, randomNumbers[0], language, "2gram", "_");
+                        } else {
+                            name += letter;
+                        }
+                    } else if (i == 1) {
+                        name += generateLetter(frequencyObject, randomNumbers[0], language, "3gram", "_" + name[0]);
+                    } else if (i == 2) {
+                        name += generateLetter(frequencyObject, randomNumbers[0], language, "4gram", "_" + name[0] + name[1]);
+                    } else {
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "4gram", name[i - 1] + name[i - 2] + name[i - 3]);
+                    }
+                } else if (nGram == "5gram") {
+                    if (i == 0) {
+                        if (letter === "random") {
+                            name += generateLetter(frequencyObject, randomNumbers[0], language, "2gram", "_");
+                        } else {
+                            name += letter;
+                        }
+                    } else if (i == 1) {
+                        name += generateLetter(frequencyObject, randomNumbers[0], language, "3gram", "_" + name[0]);
+                    } else if (i == 2) {
+                        name += generateLetter(frequencyObject, randomNumbers[0], language, "4gram", "_" + name[0] + name[1]);
+                    } else if (i == 3) {
+                        name += generateLetter(frequencyObject, randomNumbers[0], language, "5gram", "_" + name[0] + name[1] + name[2]);
+                    } else {
+                        name += generateLetter(frequencyObject, randomNumbers[i], language, "5gram", name[i - 1] + name[i - 2] + name[i - 3] + name[i - 4]);
+                    }
                 }
             }
 
