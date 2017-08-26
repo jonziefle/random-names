@@ -2,7 +2,7 @@ var RandomNameGenerator = (function () {
     // global variables
     var wordGenerator = $("#WordGenerator");
     var nameGenerator = $("#NameGenerator");
-    var lengthMin = 4, lengthMax = 10;
+    var lengthMin = 2, lengthMax = 12;
     var languageFrequency = {};
     var nameFrequency = {};
 
@@ -97,9 +97,6 @@ var RandomNameGenerator = (function () {
             language = keys[Math.floor(Math.random() * keys.length)];
         }
 
-        // pregenerate random numbers
-        var length = randomInt(lengthMin, lengthMax);
-
         // generate names
         var nameObject = {};
         $.each(frequencyObject[language], function (nGram, nGramObject) {
@@ -114,6 +111,7 @@ var RandomNameGenerator = (function () {
                 }
 
                 // remaining letters
+                var length = randomInt(lengthMin, lengthMax);
                 for (index = 1; index < length; index++) {
                     name += generateLetter(frequencyObject, language, nGram, "_");
                 }
@@ -127,8 +125,10 @@ var RandomNameGenerator = (function () {
                 }
 
                 // remaining letters
-                for (index = 1; index < length; index++) {
+                index = 1;
+                while (name.indexOf("_") === -1) {
                     name += generateLetter(frequencyObject, language, nGram, name.slice(index - 1, index));
+                    index++;
                 }
             }
             else if (nGram === "3gram") {
@@ -141,8 +141,10 @@ var RandomNameGenerator = (function () {
                 }
 
                 // remaining letters
-                for (index = 2; index < length; index++) {
-                    name += generateLetter(frequencyObject, language, "3gram", name.slice(index - 2, index));
+                index = 2;
+                while (name.indexOf("_") === -1) {
+                    name += generateLetter(frequencyObject, language, nGram, name.slice(index - 2, index));
+                    index++;
                 }
             }
             else if (nGram === "4gram") {
@@ -155,8 +157,10 @@ var RandomNameGenerator = (function () {
                 }
 
                 // remaining letters
-                for (index = 3; index < length; index++) {
+                index = 3;
+                while (name.indexOf("_") === -1) {
                     name += generateLetter(frequencyObject, language, nGram, name.slice(index - 3, index));
+                    index++;
                 }
             }
             else if (nGram === "5gram") {
@@ -169,16 +173,18 @@ var RandomNameGenerator = (function () {
                 }
 
                 // remaining letters
-                for (index = 4; index < length; index++) {
+                index = 4;
+                while (name.indexOf("_") === -1) {
                     name += generateLetter(frequencyObject, language, nGram, name.slice(index - 4, index));
+                    index++;
                 }
             }
 
             // assign name
-            nameObject[nGram] = name;
+            nameObject[nGram] = name.replace("_", "");
         });
 
-        parent.find(".word-results").html(displayResults(frequencyObject, language, nameObject));
+        parent.find(".word-results").html(displayResults(nameObject, language));
     }
 
     // generate single letter
@@ -214,42 +220,15 @@ var RandomNameGenerator = (function () {
     }
 
     // display name results
-    function displayResults(frequencyObject, language, nameObject) {
-        //var letters = frequencyObject[language]["letters"];
-
+    function displayResults(nameObject, language) {
         var html = "";
         html += "<h4>Name:</h4>";
         $.each(nameObject, function (key, value) {
             html += "<p>" + capitalizeLetter(key) + ": " + capitalizeLetter(value) + "</p>";
         });
 
-        html += "<h4>Statistics:</h4>";
-        html += "<p>Language: " + capitalizeLetter(language) + "</p>";
-        //$.each(nameObject, function (key, value) {
-        //    var nGram = key, name = value;
-        //    var frequency = frequencyObject[language][nGram];
-        //    var statistics = "";
-        //
-        //    // first letter
-        //    statistics += capitalizeLetter(name[0]) + ": ";
-        //    statistics += frequency["_"][name[0]].toFixed(2) + "%";
-        //    statistics += " | ";
-        //
-        //    // remaining letter
-        //    for (var i = 1; i < name.length; i++) {
-        //        statistics += capitalizeLetter(name[i]) + ": ";
-        //        if (nGram === "1gram") {
-        //            statistics += frequency["_"][name[i]].toFixed(2) + "%";
-        //        } else {
-        //            statistics += frequency[name[i - 1]][name[i]].toFixed(2) + "%";
-        //        }
-        //        if (i < name.length - 1) {
-        //            statistics += " | ";
-        //        }
-        //    }
-        //
-        //    html += "<p>" + capitalizeLetter(nGram) + " Frequency: " + statistics + "</p>";
-        //});
+        html += "<h4>Selector:</h4>";
+        html += "<p>" + capitalizeLetter(language) + "</p>";
 
         return html;
     }
