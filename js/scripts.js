@@ -1,9 +1,7 @@
 var RandomNameGenerator = (function () {
     // global variables
-    var wordGenerator = $("#WordGenerator");
     var nameGenerator = $("#NameGenerator");
     var lengthMin = 2, lengthMax = 12;
-    var languageFrequency = {};
     var nameFrequency = {};
 
     /***** Private Functions *********************************************************/
@@ -15,27 +13,6 @@ var RandomNameGenerator = (function () {
     // generate random integer in a given range (inclusive)
     function randomInt(min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    // loads JSON language frequency data
-    function loadLanguageFrequencyData() {
-        $.ajax({
-            dataType: "json",
-            url: "data/languages.json",
-            success: function (data) {
-                // store json data
-                languageFrequency = data;
-
-                // populate dropdowns
-                populateSelect(wordGenerator, languageFrequency, "language");
-
-                // enable name generation button
-                wordGenerator.find(".submit-button").prop("disabled", false);
-            },
-            error: function () {
-                console.log("Unable to load language frequency data.");
-            }
-        });
     }
 
     // loads JSON name frequency data
@@ -234,11 +211,6 @@ var RandomNameGenerator = (function () {
     }
 
     /***** Public Functions *********************************************************/
-    // getter for language frequency
-    function getLanguageFrequency() {
-        return languageFrequency;
-    }
-
     // getter for name frequency
     function getNameFrequency() {
         return nameFrequency;
@@ -246,12 +218,12 @@ var RandomNameGenerator = (function () {
 
     // test for the random letter generator
     function testGenerateLetter() {
-        var language = "english";
+        var gender = "male";
         var nGram = "1gram";
         var beforeLetter = "_";
 
-        var letterArray = Object.keys(languageFrequency[language][nGram][beforeLetter]);
-        var frequency = languageFrequency[language][nGram][beforeLetter];
+        var letterArray = Object.keys(nameFrequency[gender][nGram][beforeLetter]);
+        var frequency = nameFrequency[gender][nGram][beforeLetter];
 
         // initialize letter count array
         var letterCount = [];
@@ -268,7 +240,7 @@ var RandomNameGenerator = (function () {
                 console.log("Completion: " + j / testCount * 100 + "%")
             }
 
-            var randomLetter = generateLetter(languageFrequency, language, nGram, beforeLetter);
+            var randomLetter = generateLetter(nameFrequency, gender, nGram, beforeLetter);
 
             var index = letterArray.indexOf(randomLetter);
             if (index !== -1) {
@@ -292,26 +264,8 @@ var RandomNameGenerator = (function () {
 
     return {
         init: function () {
-            // make a ajax request for frequency data
-            loadLanguageFrequencyData();
+            // make a ajax request for name frequency data
             loadNameFrequencyData();
-
-            // click handler for word generation
-            wordGenerator.find(".submit-button").on("click", function () {
-                var parent = $(this).closest(".word-generator");
-                var language = parent.find(".selector[name='language']").val();
-                var letter = parent.find(".selector[name='letter']").val();
-
-                generateWord(parent, languageFrequency, language, letter);
-            });
-
-            // populate letter selector based on language
-            wordGenerator.find(".selector[name='language']").on("change", function () {
-                var parent = $(this).closest(".word-generator");
-                var language = $(this).val();
-
-                populateSelectLetter(parent, languageFrequency, language);
-            });
 
             // click handler for name generation
             nameGenerator.find(".submit-button").on("click", function () {
@@ -322,7 +276,6 @@ var RandomNameGenerator = (function () {
                 generateWord(parent, nameFrequency, gender, letter);
             });
         },
-        getLanguageFrequency: getLanguageFrequency,
         getNameFrequency: getNameFrequency,
         testGenerateLetter: testGenerateLetter
     }
