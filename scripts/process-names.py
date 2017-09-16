@@ -40,40 +40,39 @@ def main():
                             beforeLetter = "_"
                             afterLetter = name[i]
                     elif (ngram == "2gram"):
-                        if (i >= 1):
-                            beforeLetter = name[i-1:i]
+                        gramLength = 2
+                        if (i == 0):
+                            beforeLetter = name[0:i+1]
+                            afterLetter = name[i+1:gramLength]
+                        elif (i >= gramLength):
+                            beforeLetter = name[i-gramLength+1:i]
                             afterLetter = name[i]
                     elif (ngram == "3gram" and nameLength >= 3):
-                        if (i == 0):
-                            beforeLetter = name[0]
-                            afterLetter = name[1:3]
-                        elif (i == 1):
-                            beforeLetter = name[0:2]
-                            afterLetter = name[2:3]
-                        elif (i >= 3):
-                            beforeLetter = name[i-2:i]
+                        gramLength = 3
+                        if (i == 0 or i == 1):
+                            beforeLetter = name[0:i+1]
+                            afterLetter = name[i+1:gramLength]
+                        elif (i >= gramLength):
+                            beforeLetter = name[i-gramLength+1:i]
                             afterLetter = name[i]
                     elif (ngram == "4gram" and nameLength >= 4):
-                        if (i == 0):
-                            beforeLetter = name[0]
-                            afterLetter = name[1:4]
-                        elif (i == 1):
-                            beforeLetter = name[0:2]
-                            afterLetter = name[2:4]
-                        elif (i >= 4):
-                            beforeLetter = name[i-3:i]
+                        gramLength = 4
+                        if (i == 0 or i == 1):
+                            beforeLetter = name[0:i+1]
+                            afterLetter = name[i+1:gramLength]
+                        elif (i >= gramLength):
+                            beforeLetter = name[i-gramLength+1:i]
                             afterLetter = name[i]
                     elif (ngram == "5gram" and nameLength >= 5):
-                        if (i == 0):
-                            beforeLetter = name[0]
-                            afterLetter = name[1:5]
-                        elif (i == 1):
-                            beforeLetter = name[0:2]
-                            afterLetter = name[2:5]
-                        elif (i >= 5):
-                            beforeLetter = name[i-4:i]
+                        gramLength = 5
+                        if (i == 0 or i == 1):
+                            beforeLetter = name[0:i+1]
+                            afterLetter = name[i+1:gramLength]
+                        elif (i >= gramLength):
+                            beforeLetter = name[i-gramLength+1:i]
                             afterLetter = name[i]
 
+                    # increment letter count
                     if (beforeLetter != ""):
                         if (beforeLetter in data[gender][ngram]):
                             if (afterLetter in data[gender][ngram][beforeLetter]):
