@@ -11,17 +11,17 @@
     <div class="word-input">
         <p>Uses monogram, bigram, trigram, quadgram, and quintgram frequency counts</p>
         <p>(Data from US SSA name database, 2016)</p>
-        <p>Weighted frequencies weights the names by the number of children born with that name in that year. Unweighted only counts each name a single time.</p>
+        <p>
+            <b>Weighted</b> weights the names by the number of children born with that name in that year.
+            <b>Unweighted</b> only counts each name a single time.
+        </p>
         <div>
-            <label>Frequency Data:</label>
+            <label>Dataset:</label>
             <select class="selector" name="data">
+                <option value="default" disabled selected>Select a Dataset</option>
                 <option value="data/2016-unweighted.json">2016 (unweighted)</option>
                 <option value="data/2016-weighted.json">2016 (weighted)</option>
             </select>
-            <button class="data-button">Load Data</button>
-        </div>
-        <br>
-        <div>
             <label>Gender:</label>
             <select class="selector" name="gender">
                 <option value="random">Random</option>

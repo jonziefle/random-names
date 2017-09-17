@@ -2,6 +2,7 @@ var RandomNameGenerator = (function () {
     // global variables
     var nameGenerator = $("#NameGenerator");
     var lengthMin = 2, lengthMax = 12;
+    var jsonData = {};
     var nameFrequency = {};
 
     /***** Private Functions *********************************************************/
@@ -19,25 +20,37 @@ var RandomNameGenerator = (function () {
     function loadFrequencyData(url, text) {
         nameGenerator.find(".name-button").prop("disabled", true);
         nameGenerator.find(".frequency-data").text("");
-        $.ajax({
-            dataType: "json",
-            url: url,
-            success: function (data) {
-                // store json data
-                nameFrequency = data;
 
-                // populate dropdowns
-                populateSelect(nameGenerator, nameFrequency, "gender");
-                populateSelect(nameGenerator, nameFrequency["female"]["1gram"]["_"], "letter");
+        if (jsonData.hasOwnProperty(url)) {
+            nameFrequency = jsonData[url];
+            activateData();
+        } else {
+            $.ajax({
+                dataType: "json",
+                url: url,
+                success: function (data) {
+                    // store json data
+                    jsonData[url] = data;
+                    activateData();
+                },
+                error: function () {
+                    console.log("Unable to load name frequency data.");
+                }
+            });
+        }
 
-                // enable name generation button
-                nameGenerator.find(".name-button").prop("disabled", false);
-                nameGenerator.find(".frequency-data").text(text);
-            },
-            error: function () {
-                console.log("Unable to load name frequency data.");
-            }
-        });
+        function activateData() {
+            // set new data to "active"
+            nameFrequency = jsonData[url];
+
+            // populate dropdowns
+            populateSelect(nameGenerator, nameFrequency, "gender");
+            populateSelect(nameGenerator, nameFrequency["female"]["1gram"]["_"], "letter");
+
+            // enable name generation button
+            nameGenerator.find(".name-button").prop("disabled", false);
+            nameGenerator.find(".frequency-data").text(text);
+        }
     }
 
     // populate a generic selector
@@ -253,12 +266,16 @@ var RandomNameGenerator = (function () {
 
     return {
         init: function () {
-            // click handler for name frequency data ajax request
-            nameGenerator.find(".data-button").on("click", function () {
-                var parent = $(this).closest(".word-generator");
-                var url = parent.find(".selector[name='data']").val();
-                var text = parent.find(".selector[name='data'] option:selected").text();
-                loadFrequencyData(url, text);
+            // change handler for name frequency data ajax request
+            nameGenerator.find(".selector[name='data']").on("change", function () {
+                var url = $(this).val();
+                var text = $(this).find("option:selected").text();
+
+                if (url !== "default") {
+                    loadFrequencyData(url, text);
+                } else {
+                    console.log("Please select a valid dataset");
+                }
             });
 
             // click handler for name generation
