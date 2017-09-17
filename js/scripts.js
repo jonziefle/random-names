@@ -17,7 +17,7 @@ var RandomNameGenerator = (function () {
     }
 
     // loads JSON name frequency data
-    function loadFrequencyData(url, text) {
+    function loadFrequencyData(url) {
         nameGenerator.find(".name-button").prop("disabled", true);
         nameGenerator.find(".frequency-data").text("");
 
@@ -49,7 +49,6 @@ var RandomNameGenerator = (function () {
 
             // enable name generation button
             nameGenerator.find(".name-button").prop("disabled", false);
-            nameGenerator.find(".frequency-data").text(text);
         }
     }
 
@@ -269,10 +268,8 @@ var RandomNameGenerator = (function () {
             // change handler for name frequency data ajax request
             nameGenerator.find(".selector[name='data']").on("change", function () {
                 var url = $(this).val();
-                var text = $(this).find("option:selected").text();
-
                 if (url !== "default") {
-                    loadFrequencyData(url, text);
+                    loadFrequencyData(url);
                 } else {
                     console.log("Please select a valid dataset");
                 }
