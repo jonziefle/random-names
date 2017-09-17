@@ -16,10 +16,12 @@ var RandomNameGenerator = (function () {
     }
 
     // loads JSON name frequency data
-    function loadNameFrequencyData() {
+    function loadFrequencyData(url, text) {
+        nameGenerator.find(".name-button").prop("disabled", true);
+        nameGenerator.find(".frequency-data").text("");
         $.ajax({
             dataType: "json",
-            url: "data/2016.json",
+            url: url,
             success: function (data) {
                 // store json data
                 nameFrequency = data;
@@ -29,7 +31,8 @@ var RandomNameGenerator = (function () {
                 populateSelect(nameGenerator, nameFrequency["female"]["1gram"]["_"], "letter");
 
                 // enable name generation button
-                nameGenerator.find(".submit-button").prop("disabled", false);
+                nameGenerator.find(".name-button").prop("disabled", false);
+                nameGenerator.find(".frequency-data").text(text);
             },
             error: function () {
                 console.log("Unable to load name frequency data.");
@@ -44,7 +47,15 @@ var RandomNameGenerator = (function () {
             optionHTML += "<option value='" + key + "'>" + capitalizeLetter(key) + "</option>";
         });
 
-        parent.find(".selector[name='" + name + "']").append(optionHTML);
+
+        var selector = parent.find(".selector[name='" + name + "']");
+        var selectorValue = selector.val();
+        selector.find("option:gt(0)").remove();
+        selector.append(optionHTML);
+
+        if (selector.find("option[value='" + selectorValue + "']").length > 0) {
+            selector.val(selectorValue);
+        }
     }
 
     // generate words
@@ -242,11 +253,16 @@ var RandomNameGenerator = (function () {
 
     return {
         init: function () {
-            // make a ajax request for name frequency data
-            loadNameFrequencyData();
+            // click handler for name frequency data ajax request
+            nameGenerator.find(".data-button").on("click", function () {
+                var parent = $(this).closest(".word-generator");
+                var url = parent.find(".selector[name='data']").val();
+                var text = parent.find(".selector[name='data'] option:selected").text();
+                loadFrequencyData(url, text);
+            });
 
             // click handler for name generation
-            nameGenerator.find(".submit-button").on("click", function () {
+            nameGenerator.find(".name-button").on("click", function () {
                 var parent = $(this).closest(".word-generator");
                 var gender = parent.find(".selector[name='gender']").val();
                 var letter = parent.find(".selector[name='letter']").val();

@@ -5,10 +5,12 @@ letterArray = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", 
 ngramArray = ["1gram", "2gram", "3gram", "4gram", "5gram"]
 genderArray = ["male", "female"]
 data = {}
+dataWeighted = {}
 
 def main():
-    fileInput = '../data/baby-names/yob2016.txt'
-    fileOutput = '../data/2016.json'
+    fileInput = "../data/baby-names/yob2016.txt"
+    fileOutput = "../data/2016-unweighted.json"
+    fileOutputWeighted = "../data/2016-weighted.json"
 
     # open csv file
     with open(fileInput, newline='') as f:
@@ -18,8 +20,10 @@ def main():
         # initialize frequency list for the length of letters list
         for gender in genderArray:
             data[gender] = {}
+            dataWeighted[gender] = {}
             for ngram in ngramArray:
                 data[gender][ngram] = {}
+                dataWeighted[gender][ngram] = {}
 
         # add counts for each letter
         for row in reader:
@@ -76,12 +80,17 @@ def main():
                     if (beforeLetter != ""):
                         if (beforeLetter in data[gender][ngram]):
                             if (afterLetter in data[gender][ngram][beforeLetter]):
-                                data[gender][ngram][beforeLetter][afterLetter] += int(count)
+                                data[gender][ngram][beforeLetter][afterLetter] += 1
+                                dataWeighted[gender][ngram][beforeLetter][afterLetter] += int(count)
                             else:
-                                data[gender][ngram][beforeLetter][afterLetter] = int(count)
+                                data[gender][ngram][beforeLetter][afterLetter] = 1
+                                dataWeighted[gender][ngram][beforeLetter][afterLetter] = int(count)
                         else:
                             data[gender][ngram][beforeLetter] = {}
-                            data[gender][ngram][beforeLetter][afterLetter] = int(count)
+                            dataWeighted[gender][ngram][beforeLetter] = {}
+
+                            data[gender][ngram][beforeLetter][afterLetter] = 1
+                            dataWeighted[gender][ngram][beforeLetter][afterLetter] = int(count)
 
         # divide counts by total sum to get frequency
         for gender in genderArray:
@@ -92,13 +101,24 @@ def main():
                         afterLetterFrequency = round(afterLetterCount / afterLetterCountSum * 100, 4)
                         data[gender][ngram][beforeLetter][afterLetter] = afterLetterFrequency
 
+                    afterLetterCountSum = sum(dataWeighted[gender][ngram][beforeLetter].values())
+                    for afterLetter, afterLetterCount in dataWeighted[gender][ngram][beforeLetter].items():
+                        afterLetterFrequency = round(afterLetterCount / afterLetterCountSum * 100, 4)
+                        dataWeighted[gender][ngram][beforeLetter][afterLetter] = afterLetterFrequency
+
     # print json data
     #print(json.dumps(data, sort_keys=True, indent=2))
+    #print(json.dumps(dataWeighted, sort_keys=True, indent=2))
 
-    # write json data
+    # write json data (unweighted)
     with open(fileOutput, 'w') as f:
         print("Writing: " + fileOutput)
         json.dump(data, f, sort_keys=True)
+
+    # write json data (weighted)
+    with open(fileOutputWeighted, 'w') as f:
+        print("Writing: " + fileOutputWeighted)
+        json.dump(dataWeighted, f, sort_keys=True)
 
 if __name__ == "__main__":
     # execute only if run as a script
