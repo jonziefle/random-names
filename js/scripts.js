@@ -80,89 +80,96 @@ var RandomNameGenerator = (function () {
 
         // generate names
         var nameObject = {};
-        $.each(frequencyObject[gender], function (nGram, nGramObject) {
-            var name = "";
+        Object.keys(frequencyObject[gender]).forEach(function (nGram) {
             var index;
-            if (nGram === "1gram") {
-                // first letter(s)
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, gender, nGram, "_");
-                } else {
-                    name += letter;
-                }
+            var name = "";
 
-                // remaining letters
-                var length = randomInt(lengthMin, lengthMax);
-                for (index = 1; index < length; index++) {
-                    name += generateLetter(frequencyObject, gender, nGram, "_");
-                }
-            }
-            else if (nGram === "2gram") {
-                // first letter(s)
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, gender, nGram, "_");
-                } else {
-                    name += letter;
-                }
+            switch (nGram) {
+                case "1gram":
+                    // first letter(s)
+                    if (letter === "random") {
+                        name += generateLetter(frequencyObject, gender, nGram, "_");
+                    } else {
+                        name += letter;
+                    }
 
-                // remaining letters
-                index = 1;
-                while (name.indexOf("_") === -1) {
-                    name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 1, index));
-                    index++;
-                }
-            }
-            else if (nGram === "3gram") {
-                // first letter(s)
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, gender, nGram, "_");
-                } else {
-                    name += letter;
-                    name += generateLetter(frequencyObject, gender, nGram, "_" + letter);
-                }
+                    // remaining letters
+                    var length = randomInt(lengthMin, lengthMax);
+                    for (index = 1; index < length; index++) {
+                        name += generateLetter(frequencyObject, gender, nGram, "_");
+                    }
 
-                // remaining letters
-                index = 2;
-                while (name.indexOf("_") === -1) {
-                    name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 2, index));
-                    index++;
-                }
-            }
-            else if (nGram === "4gram") {
-                // first letter(s)
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, gender, nGram, "_");
-                } else {
-                    name += letter;
-                    name += generateLetter(frequencyObject, gender, nGram, "_" + letter);
-                }
+                    break;
+                case "2gram":
+                    // first letter(s)
+                    if (letter === "random") {
+                        name += generateLetter(frequencyObject, gender, nGram, "_");
+                    } else {
+                        name += letter;
+                    }
 
-                // remaining letters
-                index = 3;
-                while (name.indexOf("_") === -1) {
-                    name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 3, index));
-                    index++;
-                }
-            }
-            else if (nGram === "5gram") {
-                // first letter(s)
-                if (letter === "random") {
-                    name += generateLetter(frequencyObject, gender, nGram, "_");
-                } else {
-                    name += letter;
-                    name += generateLetter(frequencyObject, gender, nGram, "_" + letter);
-                }
+                    // remaining letters
+                    index = 1;
+                    while (name.slice(-1) !== "_") {
+                        name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 1, index));
+                        index++;
+                    }
 
-                // remaining letters
-                index = 4;
-                while (name.indexOf("_") === -1) {
-                    name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 4, index));
-                    index++;
-                }
+                    break;
+                case "3gram":
+                    // first letter(s)
+                    if (letter === "random") {
+                        name += generateLetter(frequencyObject, gender, nGram, "_");
+                    } else {
+                        name += letter;
+                        name += generateLetter(frequencyObject, gender, nGram, "_" + letter);
+                    }
+
+                    // remaining letters
+                    index = 2;
+                    while (name.slice(-1) !== "_") {
+                        name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 2, index));
+                        index++;
+                    }
+                    break;
+                case "4gram":
+                    // first letter(s)
+                    if (letter === "random") {
+                        name += generateLetter(frequencyObject, gender, nGram, "_");
+                    } else {
+                        name += letter;
+                        name += generateLetter(frequencyObject, gender, nGram, "_" + letter);
+                    }
+
+                    // remaining letters
+                    index = 3;
+                    while (name.slice(-1) !== "_") {
+                        name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 3, index));
+                        index++;
+                    }
+
+                    break;
+                case "5gram":
+                    // first letter(s)
+                    if (letter === "random") {
+                        name += generateLetter(frequencyObject, gender, nGram, "_");
+                    } else {
+                        name += letter;
+                        name += generateLetter(frequencyObject, gender, nGram, "_" + letter);
+                    }
+
+                    // remaining letters
+                    index = 4;
+                    while (name.slice(-1) !== "_") {
+                        name += generateLetter(frequencyObject, gender, nGram, name.slice(index - 4, index));
+                        index++;
+                    }
+
+                    break;
             }
 
             // assign name
-            nameObject[nGram] = name.replace("_", "");
+            nameObject[nGram] = name.replace(/_/g, "");
         });
 
         parent.find(".word-results").html(displayResults(nameObject, gender));
