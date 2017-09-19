@@ -1,3 +1,5 @@
+import os
+import sys
 import csv
 import json
 
@@ -8,9 +10,23 @@ data = {}
 dataWeighted = {}
 
 def main():
-    fileInput = "../data/baby-names/yob2016.txt"
-    fileOutput = "../data/2016-unweighted.json"
-    fileOutputWeighted = "../data/2016-weighted.json"
+    # parses command line for input file and output path
+    if (len(sys.argv) != 3):
+        print("ERROR: Please enter a input filename and output path.")
+        sys.exit()
+    elif (os.path.isfile(sys.argv[1]) != True):
+        print("ERROR: Please enter a valid filename.")
+        sys.exit()
+    elif (os.path.isdir(sys.argv[2]) != True):
+        print("ERROR: Please enter a valid output path.")
+        sys.exit()
+    else:
+        fileInput = sys.argv[1]
+        fileOutputName = os.path.splitext(os.path.basename(fileInput))[0]
+        fileOutputDir = os.path.join(sys.argv[2], '')
+
+    fileOutput = fileOutputDir + fileOutputName + "-unweighted.json"
+    fileOutputWeighted = fileOutputDir + fileOutputName + "-weighted.json"
 
     # open csv file
     with open(fileInput, newline='') as f:
