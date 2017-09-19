@@ -39,10 +39,9 @@ def main():
             for i in range(nameLength):
                 for ngram in ngramArray:
                     beforeLetter = ""
-                    if (ngram == "1gram"):
-                        if (name[i] != "_"):
-                            beforeLetter = "_"
-                            afterLetter = name[i]
+                    if (ngram == "1gram" and name[i] != "_"):
+                        beforeLetter = "_"
+                        afterLetter = name[i]
                     elif (ngram == "2gram"):
                         gramLength = 2
                         if (i == 0):
@@ -78,19 +77,16 @@ def main():
 
                     # increment letter count
                     if (beforeLetter != ""):
-                        if (beforeLetter in data[gender][ngram]):
-                            if (afterLetter in data[gender][ngram][beforeLetter]):
-                                data[gender][ngram][beforeLetter][afterLetter] += 1
-                                dataWeighted[gender][ngram][beforeLetter][afterLetter] += int(count)
-                            else:
-                                data[gender][ngram][beforeLetter][afterLetter] = 1
-                                dataWeighted[gender][ngram][beforeLetter][afterLetter] = int(count)
-                        else:
+                        if (beforeLetter not in data[gender][ngram]):
                             data[gender][ngram][beforeLetter] = {}
                             dataWeighted[gender][ngram][beforeLetter] = {}
 
-                            data[gender][ngram][beforeLetter][afterLetter] = 1
-                            dataWeighted[gender][ngram][beforeLetter][afterLetter] = int(count)
+                        if (afterLetter not in data[gender][ngram][beforeLetter]):
+                            data[gender][ngram][beforeLetter][afterLetter] = 0
+                            dataWeighted[gender][ngram][beforeLetter][afterLetter] = 0
+
+                        data[gender][ngram][beforeLetter][afterLetter] += 1
+                        dataWeighted[gender][ngram][beforeLetter][afterLetter] += int(count)
 
         # divide counts by total sum to get frequency
         for gender in genderArray:
