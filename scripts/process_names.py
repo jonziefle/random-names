@@ -9,15 +9,9 @@ letterArray = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", 
 ngramArray = ["1gram", "2gram", "3gram", "4gram", "5gram"]
 genderArray = ["male", "female"]
 
-def main():
-    # parses command line for input file and output path
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--input', nargs='+', help='<Required> Input File(s)', required=True)
-    parser.add_argument('--output', help='<Required> Output File', required=True)
-    args = parser.parse_args()
-
-    fileOutput = os.path.splitext(args.output)[0] + "-unweighted.json"
-    fileOutputWeighted = os.path.splitext(args.output)[0] + "-weighted.json"
+def main(inputFiles, outputFile):
+    outputFileUnweighted = os.path.splitext(outputFile)[0] + "-unweighted.json"
+    outputFileWeighted = os.path.splitext(outputFile)[0] + "-weighted.json"
 
     # data objects
     data = {}
@@ -32,10 +26,10 @@ def main():
             dataWeighted[gender][ngram] = {}
 
     # iterates through all files
-    for fileInput in args.input:
+    for inputFile in inputFiles:
         # open and process csv file
-        with open(fileInput, newline='') as f:
-            print("Processing: " + fileInput)
+        with open(inputFile, newline='') as f:
+            print("Processing: " + inputFile)
             reader = csv.reader(f)
 
             # add counts for each letter
@@ -120,15 +114,23 @@ def main():
     #print(json.dumps(dataWeighted, sort_keys=True, indent=2))
 
     # write json data (unweighted)
-    with open(fileOutput, 'w') as f:
-        print("Writing: " + fileOutput)
+    with open(outputFileUnweighted, 'w') as f:
+        print("Writing: " + outputFileUnweighted)
         json.dump(data, f, sort_keys=True)
 
     # write json data (weighted)
-    with open(fileOutputWeighted, 'w') as f:
-        print("Writing: " + fileOutputWeighted)
+    with open(outputFileWeighted, 'w') as f:
+        print("Writing: " + outputFileWeighted)
         json.dump(dataWeighted, f, sort_keys=True)
 
 if __name__ == "__main__":
+    # parses command line for input file and output path
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input', nargs='+', help='<Required> Input File(s)', required=True)
+    parser.add_argument('--output', help='<Required> Output File', required=True)
+    args = parser.parse_args()
+
+    print(args)
+
     # execute only if run as a script
-    main()
+    main(args.input, args.output)
