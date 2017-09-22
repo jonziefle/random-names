@@ -1,27 +1,30 @@
 import os
 import json
+import process_names
 
 def main():
-    inputDir = '../data/baby-names'
-    inputFiles = ['../data/baby-names/yob2016.txt','../data/baby-names/yob2015.txt']
-    outputFile = '../data/2016.json'
+    inputDir = '../data/baby-names/'
+    outputDir = '../data/'
 
-    data = {}
+    #inputFiles = ['../data/baby-names/yob2016.txt']
+    #outputFile = '../data/2016.json'
+    #process_names.main(inputFiles, outputFile)
+
+    yearList = {}
     count = 0
     for file in os.listdir(inputDir):
         if file.endswith('.txt'):
             if (count % 10 == 0):
                 key = file.replace('yob', '').replace('.txt', '') + 's'
-                data[key] = []
+                yearList[key] = []
 
-            data[key].append(file)
+            yearList[key].append(inputDir + file)
             count += 1
 
-    print(json.dumps(data, sort_keys=True, indent=2))
+    #print(json.dumps(data, sort_keys=True, indent=2))
 
-    #print(list(chunks(os.listdir(inputDir), 5)))
-
-    #process_names.main(inputFiles, outputFile)
+    for year in yearList:
+        process_names.main(yearList[year], outputDir + year + ".json")
 
 if __name__ == "__main__":
     # execute only if run as a script
